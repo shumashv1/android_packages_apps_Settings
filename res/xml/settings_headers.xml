@@ -109,7 +109,7 @@
         android:title="@string/pie_settings">
         <intent
             android:action="android.intent.action.MAIN"
-            android:targetPackage="com.android.lmt "
+            android:targetPackage="com.android.lmt"
             android:targetClass="com.android.lmt.LAUNCHER" />
     </header>
 
