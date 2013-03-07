@@ -103,11 +103,12 @@ public class Settings extends PreferenceActivity
             R.id.sound_settings,
             R.id.display_settings,
             R.id.security_settings,
+            R.id.user_settings,
             R.id.account_settings,
             R.id.about_settings
     };
 
-    private boolean mEnableUserManagement = false;
+    private boolean mEnableUserManagement = true;
 
     // TODO: Update Call Settings based on airplane mode state.
 
