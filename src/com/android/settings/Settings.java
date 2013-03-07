@@ -108,7 +108,7 @@ public class Settings extends PreferenceActivity
             R.id.about_settings
     };
 
-    private boolean mEnableUserManagement = true;
+    private boolean mEnableUserManagement = false;
 
     // TODO: Update Call Settings based on airplane mode state.
 
