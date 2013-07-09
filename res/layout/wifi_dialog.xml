@@ -34,10 +34,12 @@
                       style="@style/wifi_item" >
                 <TextView
                         style="@style/wifi_item_label"
-                        android:text="@string/wifi_ssid" />
+                        android:text="@string/wifi_ssid"
+                        android:textDirection="locale" />
 
                 <EditText android:id="@+id/ssid"
                         style="@style/wifi_item_content"
+                        android:maxLength="32"
                         android:singleLine="true"
                         android:inputType="textNoSuggestions" />
              </LinearLayout>
@@ -45,7 +47,7 @@
              <LinearLayout
                        style="@style/wifi_item" >
                  <TextView
-                         style="@style/wifi_item_label"
+                         style="@style/wifi_item_content"
                          android:text="@string/wifi_security" />
 
                  <Spinner android:id="@+id/security"
@@ -75,7 +77,7 @@
                             android:prompt="@string/wifi_eap_method"
                             android:entries="@array/wifi_eap_method" />
                 </LinearLayout>
-
+                
                 <LinearLayout android:id="@+id/l_phase2"
                         android:visibility="gone"
                         style="@style/wifi_item" >
@@ -165,15 +167,6 @@
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout android:id="@+id/wifi_auto_connect_toggle"
-                    style="@style/wifi_item"
-                    android:visibility="gone">
-            <CheckBox android:id="@+id/wifi_auto_connect_togglebox"
-                    style="@style/wifi_item_content"
-                    android:textSize="14sp"
-                    android:text="@string/wifi_auto_connect" />
-        </LinearLayout>
-
         <LinearLayout android:id="@+id/wifi_advanced_toggle"
                     style="@style/wifi_item"
                     android:visibility="gone">
@@ -188,6 +181,28 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:visibility="gone">
+
+            <LinearLayout android:id="@+id/wifi_ibss_toggle"
+                    style="@style/wifi_item"
+                    android:visibility="gone">
+                <CheckBox android:id="@+id/wifi_ibss_checkbox"
+                        style="@style/wifi_item_content"
+                        android:textSize="14sp"
+                        android:text="@string/wifi_mode_ibss" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/wifi_ibss_freq_fields"
+                    style="@style/wifi_item"
+                    android:visibility="gone">
+
+                <TextView android:id="@+id/wifi_ibss_freq_title"
+                        style="@style/wifi_item_label"
+                        android:text="@string/wifi_ibss_freq_title" />
+
+                <Spinner android:id="@+id/wifi_ibss_freq"
+                        style="@style/wifi_item_content"
+                        android:prompt="@string/wifi_ibss_freq_title" />
+            </LinearLayout>
 
             <LinearLayout android:id="@+id/proxy_settings_fields"
                     style="@style/wifi_item"

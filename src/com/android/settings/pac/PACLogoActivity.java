@@ -72,7 +72,7 @@ public class PACLogoActivity extends Activity {
         tv.setTextSize(1.25f*size);
         tv.setTextColor(0xFFFFFFFF);
         tv.setShadowLayer(4*metrics.density, 0, 2*metrics.density, 0x66000000);
-        tv.setText("PAC-man");
+        tv.setText("SCHIZOID");
         view.addView(tv, lp);
    
         tv = new TextView(this);
@@ -120,7 +120,7 @@ public class PACLogoActivity extends Activity {
                             | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
                         .setClassName("com.android.settings","com.android.settings.pac.PACCircus"));
                 } catch (ActivityNotFoundException ex) {
-                    android.util.Log.e("PACLogoActivity", "Couldn't find a circus of PAC's.");
+                    android.util.Log.e("PACLogoActivity", "Couldn't find a circus.");
                 }
                 finish();
                 return true;

@@ -25,6 +25,7 @@ import android.os.ParcelUuid;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
+import android.bluetooth.BluetoothAdapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,18 +65,20 @@ final class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> {
     private boolean mVisible;
 
     private int mPhonebookPermissionChoice;
+    private int mMessagePermissionChoice;
 
     private final Collection<Callback> mCallbacks = new ArrayList<Callback>();
 
-    // Following constants indicate the user's choices of Phone book access settings
+    // Following constants indicate the user's choices of Phone book or MAS access settings
     // User hasn't made any choice or settings app has wiped out the memory
-    final static int PHONEBOOK_ACCESS_UNKNOWN = 0;
+    final static int PERMISSION_ACCESS_UNKNOWN = 0;
     // User has accepted the connection and let Settings app remember the decision
-    final static int PHONEBOOK_ACCESS_ALLOWED = 1;
+    final static int PERMISSION_ACCESS_ALLOWED = 1;
     // User has rejected the connection and let Settings app remember the decision
-    final static int PHONEBOOK_ACCESS_REJECTED = 2;
+    final static int PERMISSION_ACCESS_REJECTED = 2;
 
     private final static String PHONEBOOK_PREFS_NAME = "bluetooth_phonebook_permission";
+    private final static String MESSAGE_PREFS_NAME = "bluetooth_message_permissions";
 
     /**
      * When we connect to multiple profiles, we only want to display a single
@@ -118,7 +121,11 @@ final class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> {
             Log.d(TAG, "onProfileStateChanged: profile " + profile +
                     " newProfileState " + newProfileState);
         }
-
+        if (mLocalAdapter.getBluetoothState() == BluetoothAdapter.STATE_TURNING_OFF)
+        {
+            if (Utils.D) Log.d(TAG, " BT Turninig Off...Profile conn state change ignored...");
+            return;
+        }
         mProfileConnectionState.put(profile, newProfileState);
         if (newProfileState == BluetoothProfile.STATE_CONNECTED) {
             if (!mProfiles.contains(profile)) {
@@ -156,6 +163,14 @@ final class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> {
         for (LocalBluetoothProfile profile : mProfiles) {
             disconnect(profile);
         }
+        // Disconnect  PBAP server in case its connected
+        // This is to ensure all the profiles are disconnected as some CK/Hs do not
+        // disconnect  PBAP connection when HF connection is brought down
+        PbapServerProfile PbapProfile = mProfileManager.getPbapProfile();
+        if (PbapProfile.getConnectionStatus(mDevice) == BluetoothProfile.STATE_CONNECTED)
+        {
+            PbapProfile.disconnect(mDevice);
+        }
     }
 
     void disconnect(LocalBluetoothProfile profile) {
@@ -184,12 +199,15 @@ final class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> {
     private void connectWithoutResettingTimer(boolean connectAllProfiles) {
         // Try to initialize the profiles if they were not.
         if (mProfiles.isEmpty()) {
-            if (!updateProfiles()) {
-                // If UUIDs are not available yet, connect will be happen
-                // upon arrival of the ACTION_UUID intent.
-                if (DEBUG) Log.d(TAG, "No profiles. Maybe we will connect later");
-                return;
-            }
+            // if mProfiles is empty, then do not invoke updateProfiles. This causes a race
+            // condition with carkits during pairing, wherein RemoteDevice.UUIDs have been updated
+            // from bluetooth stack but ACTION.uuid is not sent yet.
+            // Eventually ACTION.uuid will be received which shall trigger the connection of the
+            // various profiles
+            // If UUIDs are not available yet, connect will be happen
+            // upon arrival of the ACTION_UUID intent.
+            Log.d(TAG, "No profiles. Maybe we will connect later");
+            return;
         }
 
         // Reset the only-show-one-error-dialog tracking variable
@@ -236,9 +254,11 @@ final class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> {
         // Reset the only-show-one-error-dialog tracking variable
         mIsConnectingErrorPossible = true;
         connectInt(profile);
+        // Refresh the UI based on profile.connect() call
+        refresh();
     }
 
-    private void connectInt(LocalBluetoothProfile profile) {
+    synchronized void connectInt(LocalBluetoothProfile profile) {
         if (!ensurePaired()) {
             return;
         }
@@ -283,8 +303,6 @@ final class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> {
     }
 
     void unpair() {
-        disconnect();
-
         int state = getBondState();
 
         if (state == BluetoothDevice.BOND_BONDING) {
@@ -317,13 +335,23 @@ final class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> {
         return mProfileConnectionState.get(profile);
     }
 
+    public void clearProfileConnectionState ()
+    {
+        if (Utils.D) {
+            Log.d(TAG," Clearing all connection state for dev:" + mDevice.getName());
+        }
+        for (LocalBluetoothProfile profile :getProfiles()) {
+            mProfileConnectionState.put(profile, BluetoothProfile.STATE_DISCONNECTED);
+        }
+    }
+
     // TODO: do any of these need to run async on a background thread?
     private void fillData() {
         fetchName();
         fetchBtClass();
         updateProfiles();
-        fetchPhonebookPermissionChoice();
-
+        mPhonebookPermissionChoice = fetchPermissionChoice(PHONEBOOK_PREFS_NAME);
+        mMessagePermissionChoice = fetchPermissionChoice(MESSAGE_PREFS_NAME);
         mVisible = false;
         dispatchAttributesChanged();
     }
@@ -436,7 +464,7 @@ final class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> {
         ParcelUuid[] localUuids = mLocalAdapter.getUuids();
         if (localUuids == null) return false;
 
-        mProfileManager.updateProfiles(uuids, localUuids, mProfiles, mRemovedProfiles);
+        mProfileManager.updateProfiles(uuids, localUuids, mProfiles, mRemovedProfiles, mLocalNapRoleConnected);
 
         if (DEBUG) {
             Log.e(TAG, "updating profiles for " + mDevice.getAliasName());
@@ -487,7 +515,8 @@ final class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> {
         if (bondState == BluetoothDevice.BOND_NONE) {
             mProfiles.clear();
             mConnectAfterPairing = false;  // cancel auto-connect
-            setPhonebookPermissionChoice(PHONEBOOK_ACCESS_UNKNOWN);
+            setPhonebookPermissionChoice(PERMISSION_ACCESS_UNKNOWN);
+            setMessagePermissionChoice(PERMISSION_ACCESS_UNKNOWN);
         }
 
         refresh();
@@ -603,23 +632,35 @@ final class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> {
         return mPhonebookPermissionChoice;
     }
 
+    int getMessagePermissionChoice() {
+        return mMessagePermissionChoice;
+    }
+
     void setPhonebookPermissionChoice(int permissionChoice) {
+        savePermissionChoice(PHONEBOOK_PREFS_NAME, permissionChoice);
+        mPhonebookPermissionChoice = permissionChoice;
+    }
+
+    void setMessagePermissionChoice(int permissionChoice) {
+        savePermissionChoice(MESSAGE_PREFS_NAME, permissionChoice);
+        mMessagePermissionChoice = permissionChoice;
+    }
+
+    private void savePermissionChoice(String prefsName, int permissionChoice) {
         SharedPreferences.Editor editor =
-            mContext.getSharedPreferences(PHONEBOOK_PREFS_NAME, Context.MODE_PRIVATE).edit();
-        if (permissionChoice == PHONEBOOK_ACCESS_UNKNOWN) {
+            mContext.getSharedPreferences(prefsName, Context.MODE_PRIVATE).edit();
+        if (permissionChoice == PERMISSION_ACCESS_UNKNOWN) {
             editor.remove(mDevice.getAddress());
         } else {
             editor.putInt(mDevice.getAddress(), permissionChoice);
         }
         editor.commit();
-        mPhonebookPermissionChoice = permissionChoice;
     }
 
-    private void fetchPhonebookPermissionChoice() {
-        SharedPreferences preference = mContext.getSharedPreferences(PHONEBOOK_PREFS_NAME,
+    private int fetchPermissionChoice(String prefsName) {
+        SharedPreferences preference = mContext.getSharedPreferences(prefsName,
                                                                      Context.MODE_PRIVATE);
-        mPhonebookPermissionChoice = preference.getInt(mDevice.getAddress(),
-                                                       PHONEBOOK_ACCESS_UNKNOWN);
+        return preference.getInt(mDevice.getAddress(), PERMISSION_ACCESS_UNKNOWN);
     }
 
 }

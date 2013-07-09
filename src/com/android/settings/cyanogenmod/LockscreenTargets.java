@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
+
 package com.android.settings.cyanogenmod;
 
 import java.io.File;
@@ -35,7 +35,15 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Xfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
@@ -125,7 +133,7 @@ public class LockscreenTargets extends Fragment implements ShortcutPickHelper.On
         mWaveView.setOnTriggerListener(this);
         initializeView(Settings.System.getString(mActivity.getContentResolver(), Settings.System.LOCKSCREEN_TARGETS));
     }
-*/
+
     /**
      * Create a layered drawable
      * @param back - Background image to use when target is active
@@ -134,7 +142,7 @@ public class LockscreenTargets extends Fragment implements ShortcutPickHelper.On
      * @param frontBlank - Whether the front image for active target should be blank
      * @return StateListDrawable
      */
-/*    private StateListDrawable getLayeredDrawable(Drawable back, Drawable front, int inset, boolean frontBlank) {
+    private StateListDrawable getLayeredDrawable(Drawable back, Drawable front, int inset, boolean frontBlank) {
         front.mutate();
         back.mutate();
         InsetDrawable[] inactivelayer = new InsetDrawable[2];
@@ -160,10 +168,10 @@ public class LockscreenTargets extends Fragment implements ShortcutPickHelper.On
 
     private void initializeView(String input) {
         if (input == null) {
-            input = GlowPadView.DEFAULT_TARGETS;
+            input = GlowPadView.EMPTY_TARGET;
         }
         mTargetStore.clear();
-        final int maxTargets = GlowPadView.MAX_TARGETS;
+        final int maxTargets = mIsScreenLarge ? GlowPadView.MAX_TABLET_TARGETS : GlowPadView.MAX_PHONE_TARGETS;
         final PackageManager packMan = mActivity.getPackageManager();
         final Drawable activeBack = mResources.getDrawable(com.android.internal.R.drawable.ic_lockscreen_target_activated);
         final String[] targetStore = input.split("\\|");
@@ -194,7 +202,8 @@ public class LockscreenTargets extends Fragment implements ShortcutPickHelper.On
                             File fPath = new File(rSource);
                             if (fPath != null) {
                                 if (fPath.exists()) {
-                                    front = new BitmapDrawable(getResources(), BitmapFactory.decodeFile(rSource));
+                                    front = new BitmapDrawable(getResources(), getRoundedCornerBitmap(BitmapFactory.decodeFile(rSource)));
+                                    tmpInset = tmpInset + 5;
                                 }
                             }
                         } else if (in.hasExtra(GlowPadView.ICON_RESOURCE)) {
@@ -258,10 +267,32 @@ public class LockscreenTargets extends Fragment implements ShortcutPickHelper.On
         mWaveView.setTargetResources(tDraw);
     }
 
+    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+            bitmap.getHeight(), Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+        final float roundPx = 24;
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        return output;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        mContainer.setPadding(0, 0, 0, 0);
+        // If running on a phone, remove padding around container
+        if (!mIsScreenLarge) {
+            mContainer.setPadding(0, 0, 0, 0);
+        }
     }
 
     @Override
@@ -292,35 +323,32 @@ public class LockscreenTargets extends Fragment implements ShortcutPickHelper.On
                 return false;
         }
     }
-*/
+
     /**
      * Resets the target layout to stock
      */
-/*    private void resetAll() {
+    private void resetAll() {
         new AlertDialog.Builder(mActivity)
         .setTitle(R.string.lockscreen_target_reset_title)
         .setIconAttribute(android.R.attr.alertDialogIcon)
         .setMessage(R.string.lockscreen_target_reset_message)
         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                initializeView("empty|#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;" +
-                        "component=com.google.android.googlequicksearchbox/.SearchActivity;S.icon_resource=ic_lockscreen_google_normal;" +
-                        "end|empty|#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;" +
-                        "component=com.android.gallery3d/com.android.camera.CameraLauncher;S.icon_resource=ic_lockscreen_camera_normal;end");
-                saveAll();
+                initializeView(null);
+                Settings.System.putString(mActivity.getContentResolver(), Settings.System.LOCKSCREEN_TARGETS, null);
                 Toast.makeText(mActivity, R.string.lockscreen_target_reset, Toast.LENGTH_LONG).show();
             }
         }).setNegativeButton(R.string.cancel, null)
         .create().show();
     }
-*/
+
     /**
      * Save targets to settings provider
      */
-/*    private void saveAll() {
+    private void saveAll() {
         StringBuilder targetLayout = new StringBuilder();
         ArrayList<String> existingImages = new ArrayList<String>();
-        final int maxTargets = GlowPadView.MAX_TARGETS;
+        final int maxTargets = mIsScreenLarge ? GlowPadView.MAX_TABLET_TARGETS : GlowPadView.MAX_PHONE_TARGETS;
         for (int i = mTargetOffset + 1; i <= mTargetOffset + maxTargets; i++) {
             String uri = mTargetStore.get(i).uri;
             String type = mTargetStore.get(i).iconType;
@@ -351,11 +379,11 @@ public class LockscreenTargets extends Fragment implements ShortcutPickHelper.On
             }
         }
     }
-*/
+
     /**
      * Updates a target in the GlowPadView
      */
-/*    private void setTarget(int position, String uri, Drawable draw, String iconType, String iconSource, String pkgName) {
+    private void setTarget(int position, String uri, Drawable draw, String iconType, String iconSource, String pkgName) {
         TargetInfo item = mTargetStore.get(position);
         StateListDrawable state = (StateListDrawable) item.icon;
         LayerDrawable inActiveLayer = (LayerDrawable) state.getStateDrawable(0);
@@ -437,6 +465,9 @@ public class LockscreenTargets extends Fragment implements ShortcutPickHelper.On
 
     @Override
     public void onReleased(View v, int handle) {
+    }
+
+    public void onTargetChange(View v, int target) {
     }
 
     @Override
@@ -568,4 +599,4 @@ public class LockscreenTargets extends Fragment implements ShortcutPickHelper.On
     @Override
     public void onFinishFinalAnimation() {
     }
-}*/
+}

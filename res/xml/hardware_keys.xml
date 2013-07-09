@@ -19,33 +19,14 @@
     android:title="@string/hardware_keys_title">
 
     <PreferenceCategory
-        android:title="@string/hardware_keys_title">
-
-       <CheckBoxPreference
-            android:key="key_back_enabled"
-            android:title="@string/key_back_enabled"
-            android:defaultValue="true" />
-
-       <CheckBoxPreference
-            android:key="key_menu_enabled"
-            android:title="@string/key_menu_enabled"
-            android:defaultValue="true" />
-
-       <CheckBoxPreference
-            android:key="key_home_enabled"
-            android:title="@string/key_home_enabled"
-            android:defaultValue="true" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:key="hardware_keys_bindings"
         android:title="@string/hardware_keys_bindings_title">
 
         <CheckBoxPreference
             android:key="hardware_keys_enable_custom"
             android:title="@string/hardware_keys_enable_custom_title"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            android:persistent="false" />
 
         <ListPreference
             android:key="hardware_keys_home_long_press"
@@ -53,6 +34,7 @@
             android:title="@string/hardware_keys_home_long_press_title"
             android:entries="@array/hardware_keys_action_entries"
             android:entryValues="@array/hardware_keys_action_values"
+            android:persistent="false"
             android:dependency="hardware_keys_enable_custom" />
 
         <ListPreference
@@ -61,6 +43,7 @@
             android:title="@string/hardware_keys_menu_press_title"
             android:entries="@array/hardware_keys_action_entries"
             android:entryValues="@array/hardware_keys_action_values"
+            android:persistent="false"
             android:dependency="hardware_keys_enable_custom" />
 
         <ListPreference
@@ -69,6 +52,7 @@
             android:title="@string/hardware_keys_menu_long_press_title"
             android:entries="@array/hardware_keys_action_entries"
             android:entryValues="@array/hardware_keys_action_values"
+            android:persistent="false"
             android:dependency="hardware_keys_enable_custom" />
 
         <ListPreference
@@ -77,6 +61,7 @@
             android:title="@string/hardware_keys_assist_press_title"
             android:entries="@array/hardware_keys_action_entries"
             android:entryValues="@array/hardware_keys_action_values"
+            android:persistent="false"
             android:dependency="hardware_keys_enable_custom" />
 
         <ListPreference
@@ -85,6 +70,7 @@
             android:title="@string/hardware_keys_assist_long_press_title"
             android:entries="@array/hardware_keys_action_entries"
             android:entryValues="@array/hardware_keys_action_values"
+            android:persistent="false"
             android:dependency="hardware_keys_enable_custom" />
 
         <ListPreference
@@ -93,6 +79,7 @@
             android:title="@string/hardware_keys_app_switch_press_title"
             android:entries="@array/hardware_keys_action_entries"
             android:entryValues="@array/hardware_keys_action_values"
+            android:persistent="false"
             android:dependency="hardware_keys_enable_custom" />
 
         <ListPreference
@@ -101,18 +88,8 @@
             android:title="@string/hardware_keys_app_switch_long_press_title"
             android:entries="@array/hardware_keys_action_entries"
             android:entryValues="@array/hardware_keys_action_values"
+            android:persistent="false"
             android:dependency="hardware_keys_enable_custom" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/additional_options_title">
-
-       <CheckBoxPreference
-            android:key="hardware_keys_show_overflow"
-            android:title="@string/hardware_keys_show_overflow_title"
-            android:summary="@string/hardware_keys_show_overflow_summary"
-            android:defaultValue="false" />
 
     </PreferenceCategory>
 

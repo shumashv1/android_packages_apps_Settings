@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 CyanogenMod
+ * Copyright (C) 2012 The CyanogenMod project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,109 +16,70 @@
 
 package com.android.settings.cyanogenmod;
 
-import android.app.ActivityManagerNative;
 import android.content.Context;
-import android.content.res.Configuration;
-import android.content.res.Resources;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.os.ServiceManager;
-import android.preference.ListPreference;
+import android.os.UserHandle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.IWindowManager;
 
 import com.android.settings.R;
 import com.android.settings.SettingsPreferenceFragment;
-import com.android.settings.Utils;
 
-public class SystemSettings extends SettingsPreferenceFragment implements
-        Preference.OnPreferenceChangeListener {
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class SystemSettings extends SettingsPreferenceFragment {
     private static final String TAG = "SystemSettings";
-
-    private static final String KEY_FONT_SIZE = "font_size";
-    private static final String KEY_NOTIFICATION_DRAWER = "notification_drawer";
-    private static final String KEY_NOTIFICATION_DRAWER_TABLET = "notification_drawer_tablet";
-    private static final String KEY_NAVIGATION_BAR = "navigation_bar";
+    
     private static final String KEY_HARDWARE_KEYS = "hardware_keys";
+    private static final String KEY_LOCK_CLOCK = "lock_clock";
+    private static final String KEY_NOTIFICATION_DRAWER = "notification_drawer";
+    private static final String KEY_POWER_MENU = "power_menu";
 
-    private ListPreference mFontSizePref;
-    private PreferenceScreen mPhoneDrawer;
-    private PreferenceScreen mTabletDrawer;
-    private PreferenceScreen mNavigationBar;
-    private PreferenceScreen mHardwareKeys;
+    private boolean mIsPrimary;
 
-    private final Configuration mCurConfig = new Configuration();
+    public boolean hasButtons() {
+        return !getResources().getBoolean(com.android.internal.R.bool.config_showNavigationBar);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.system_settings);
+        PreferenceScreen prefScreen = getPreferenceScreen();
 
-        mFontSizePref = (ListPreference) findPreference(KEY_FONT_SIZE);
-        mFontSizePref.setOnPreferenceChangeListener(this);
-        mPhoneDrawer = (PreferenceScreen) findPreference(KEY_NOTIFICATION_DRAWER);
-        mTabletDrawer = (PreferenceScreen) findPreference(KEY_NOTIFICATION_DRAWER_TABLET);
-        mNavigationBar = (PreferenceScreen) findPreference(KEY_NAVIGATION_BAR);
-        mHardwareKeys = (PreferenceScreen) findPreference(KEY_HARDWARE_KEYS);
-
-        if (Utils.isTablet()) {
-            if (mPhoneDrawer != null) {
-                getPreferenceScreen().removePreference(mPhoneDrawer);
+        // Determine which user is logged in
+        mIsPrimary = UserHandle.myUserId() == UserHandle.USER_OWNER;
+        if (mIsPrimary) {
+            // Primary user only preferences
+            // Only show the hardware keys config on a device that does not have a navbar
+            PreferenceScreen hardwareKeys = (PreferenceScreen) findPreference(KEY_HARDWARE_KEYS);
+            if (!hasButtons()) {
+               prefScreen.removePreference(hardwareKeys);
             }
+
         } else {
-            if (mTabletDrawer != null) {
-                getPreferenceScreen().removePreference(mTabletDrawer);
-            }
-        }
-        
-        IWindowManager wm = IWindowManager.Stub.asInterface(ServiceManager.getService(Context.WINDOW_SERVICE));
-        try {
-            if(!wm.hasHardwareKeys())
-                getPreferenceScreen().removePreference(mHardwareKeys);
-        } catch (RemoteException ex) {
-            // no WindowManager ?, and we're still alive?
-        }
-    }
-
-    int floatToIndex(float val) {
-        String[] indices = getResources().getStringArray(R.array.entryvalues_font_size);
-        float lastVal = Float.parseFloat(indices[0]);
-        for (int i=1; i<indices.length; i++) {
-            float thisVal = Float.parseFloat(indices[i]);
-            if (val < (lastVal + (thisVal-lastVal)*.5f)) {
-                return i-1;
-            }
-            lastVal = thisVal;
-        }
-        return indices.length-1;
-    }
-
-    public void readFontSizePreference(ListPreference pref) {
-        try {
-            mCurConfig.updateFrom(ActivityManagerNative.getDefault().getConfiguration());
-        } catch (RemoteException e) {
-            Log.w(TAG, "Unable to retrieve font size");
+            // Secondary user is logged in, remove all primary user specific preferences
+            prefScreen.removePreference(findPreference(KEY_HARDWARE_KEYS));
+            prefScreen.removePreference(findPreference(KEY_POWER_MENU));
+            prefScreen.removePreference(findPreference(KEY_NOTIFICATION_DRAWER));
         }
 
-        // mark the appropriate item in the preferences list
-        int index = floatToIndex(mCurConfig.fontScale);
-        pref.setValueIndex(index);
-
-        // report the current size in the summary text
-        final Resources res = getResources();
-        String[] fontSizeNames = res.getStringArray(R.array.entries_font_size);
-        pref.setSummary(String.format(res.getString(R.string.summary_font_size),
-                fontSizeNames[index]));
+        // Preferences that applies to all users
+        // Don't display the lock clock preference if its not installed
+        removePreferenceIfPackageNotInstalled(findPreference(KEY_LOCK_CLOCK));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        updateState();
     }
 
     @Override
@@ -126,25 +87,21 @@ public class SystemSettings extends SettingsPreferenceFragment implements
         super.onPause();
     }
 
-    private void updateState() {
-        readFontSizePreference(mFontSizePref);
-    }
+    private boolean removePreferenceIfPackageNotInstalled(Preference preference) {
+        String intentUri = ((PreferenceScreen) preference).getIntent().toUri(1);
+        Pattern pattern = Pattern.compile("component=([^/]+)/");
+        Matcher matcher = pattern.matcher(intentUri);
 
-    public void writeFontSizePreference(Object objValue) {
-        try {
-            mCurConfig.fontScale = Float.parseFloat(objValue.toString());
-            ActivityManagerNative.getDefault().updatePersistentConfiguration(mCurConfig);
-        } catch (RemoteException e) {
-            Log.w(TAG, "Unable to save font size");
+        String packageName = matcher.find() ? matcher.group(1) : null;
+        if (packageName != null) {
+            try {
+                getPackageManager().getPackageInfo(packageName, 0);
+            } catch (NameNotFoundException e) {
+                Log.e(TAG, "package " + packageName + " not installed, hiding preference.");
+                getPreferenceScreen().removePreference(preference);
+                return true;
+            }
         }
-    }
-
-    public boolean onPreferenceChange(Preference preference, Object objValue) {
-        final String key = preference.getKey();
-        if (KEY_FONT_SIZE.equals(key)) {
-            writeFontSizePreference(objValue);
-        }
-
-        return true;
+        return false;
     }
 }

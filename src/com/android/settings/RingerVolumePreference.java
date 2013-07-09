@@ -17,7 +17,6 @@
 package com.android.settings;
 
 import static android.os.BatteryManager.BATTERY_STATUS_UNKNOWN;
-import static android.provider.Telephony.Intents.SPN_STRINGS_UPDATED_ACTION;
 
 import com.android.internal.telephony.TelephonyIntents;
 
@@ -48,7 +47,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Special preference type that allows configuration of both the ring volume and
@@ -189,6 +187,7 @@ public class RingerVolumePreference extends VolumePreference {
 
         final CheckBox linkCheckBox = (CheckBox) view.findViewById(R.id.link_ring_and_volume);
         final CheckBox linkMuteStates = (CheckBox) view.findViewById(R.id.link_mutes);
+        final CheckBox volumeKeysControlRingStream = (CheckBox) view.findViewById(R.id.volume_keys_control_ring_stream);
 
         final View ringerSection = view.findViewById(R.id.ringer_section);
         final View notificationSection = view.findViewById(R.id.notification_section);
@@ -258,6 +257,24 @@ public class RingerVolumePreference extends VolumePreference {
                 }
 
             });
+
+            if (System.getInt(getContext().getContentResolver(),
+                    System.VOLUME_KEYS_CONTROL_RING_STREAM, 1) == 1) {
+                volumeKeysControlRingStream.setChecked(true);
+            } else {
+                volumeKeysControlRingStream.setChecked(false);
+            }
+
+            volumeKeysControlRingStream.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    Settings.System.putInt(buttonView.getContext().getContentResolver(),
+                            Settings.System.VOLUME_KEYS_CONTROL_RING_STREAM, isChecked ? 1 : 0);
+                }
+
+            });
+
         } else {
             ringerSection.setVisibility(View.GONE);
             linkVolumesSection.setVisibility(View.GONE);

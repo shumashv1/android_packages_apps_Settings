@@ -20,6 +20,7 @@ import static android.net.NetworkPolicyManager.POLICY_NONE;
 import static android.net.NetworkPolicyManager.POLICY_REJECT_METERED_BACKGROUND;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.INotificationManager;
@@ -41,6 +42,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.os.UserHandle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFrameLayout;
 import android.provider.Settings;
@@ -75,6 +77,7 @@ import com.android.settings.deviceinfo.StorageMeasurement;
 import com.android.settings.Utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -241,6 +244,7 @@ public class ManageApplications extends Fragment implements
             mRootView = inflater.inflate(mListType == LIST_TYPE_RUNNING
                     ? R.layout.manage_applications_running
                     : R.layout.manage_applications_apps, null);
+            mRootView.setLayoutDirection(mRootView.getResources().getConfiguration().getLayoutDirection());
             mLoadingContainer = mRootView.findViewById(R.id.loading_container);
             mLoadingContainer.setVisibility(View.VISIBLE);
             mListContainer = mRootView.findViewById(R.id.list_container);
@@ -342,7 +346,8 @@ public class ManageApplications extends Fragment implements
                     final int N = mApplications.getCount();
                     for (int i=0; i<N; i++) {
                         ApplicationsState.AppEntry ae = mApplications.getAppEntry(i);
-                        mAppStorage += ae.externalCodeSize + ae.externalDataSize;
+                        mAppStorage += ae.externalCodeSize + ae.externalDataSize
+                                + ae.externalCacheSize;
                     }
                 }
             } else {
@@ -763,17 +768,18 @@ public class ManageApplications extends Fragment implements
                 holder.entry = entry;
                 if (entry.label != null) {
                     holder.appName.setText(entry.label);
-                    holder.appName.setTextColor(mContext.getResources().getColorStateList(
-                            entry.info.enabled ? android.R.color.primary_text_dark
-                                    : android.R.color.secondary_text_dark));
                 }
                 mState.ensureIcon(entry);
                 if (entry.icon != null) {
                     holder.appIcon.setImageDrawable(entry.icon);
                 }
                 holder.updateSizeText(mTab.mInvalidSizeStr, mWhichSize);
-                if (InstalledAppDetails.SUPPORT_DISABLE_APPS) {
-                    holder.disabled.setVisibility(entry.info.enabled ? View.GONE : View.VISIBLE);
+                if ((entry.info.flags&ApplicationInfo.FLAG_INSTALLED) == 0) {
+                    holder.disabled.setVisibility(View.VISIBLE);
+                    holder.disabled.setText(R.string.not_installed);
+                } else if (!entry.info.enabled) {
+                    holder.disabled.setVisibility(View.VISIBLE);
+                    holder.disabled.setText(R.string.disabled);
                 } else {
                     holder.disabled.setVisibility(View.GONE);
                 }
@@ -871,6 +877,7 @@ public class ManageApplications extends Fragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        container.setLayoutDirection(container.getResources().getConfiguration().getLayoutDirection());
         // initialize the inflater
         mInflater = inflater;
 
@@ -897,6 +904,10 @@ public class ManageApplications extends Fragment implements
         }
 
         if (savedInstanceState == null) {
+            //Reverse the tab list once if the language is RTL.
+            if(container.isLayoutRtl()){
+                Collections.reverse(mTabs);
+            }
             // First time init: make sure view pager is showing the correct tab.
             for (int i = 0; i < mTabs.size(); i++) {
                 TabInfo tab = mTabs.get(i);
@@ -995,7 +1006,6 @@ public class ManageApplications extends Fragment implements
     
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        Log.i(TAG, "onCreateOptionsMenu in " + this + ": " + menu);
         mOptionsMenu = menu;
         // note: icons removed for now because the cause the new action
         // bar UI to be very confusing.
@@ -1120,11 +1130,15 @@ public class ManageApplications extends Fragment implements
                                 + prefActivities.get(i).getPackageName());
                         pm.clearPackagePreferredActivities(prefActivities.get(i).getPackageName());
                     }
-                    final int[] restrictedAppIds = npm.getAppsWithPolicy(
+                    final int[] restrictedUids = npm.getUidsWithPolicy(
                             POLICY_REJECT_METERED_BACKGROUND);
-                    for (int i : restrictedAppIds) {
-                        if (DEBUG) Log.v(TAG, "Clearing data policy: " + i);
-                        npm.setAppPolicy(i, POLICY_NONE);
+                    final int currentUserId = ActivityManager.getCurrentUser();
+                    for (int uid : restrictedUids) {
+                        // Only reset for current user
+                        if (UserHandle.getUserId(uid) == currentUserId) {
+                            if (DEBUG) Log.v(TAG, "Clearing data policy: " + uid);
+                            npm.setUidPolicy(uid, POLICY_NONE);
+                        }
                     }
                     handler.post(new Runnable() {
                         @Override public void run() {

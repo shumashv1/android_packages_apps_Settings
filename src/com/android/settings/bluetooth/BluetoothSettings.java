@@ -119,13 +119,13 @@ public final class BluetoothSettings extends DeviceListPreferenceFragment {
             if (preferenceActivity.onIsHidingHeaders() || !preferenceActivity.onIsMultiPane()) {
                 final int padding = activity.getResources().getDimensionPixelSize(
                         R.dimen.action_bar_switch_padding);
-                actionBarSwitch.setPadding(0, 0, padding, 0);
+                actionBarSwitch.setPaddingRelative(0, 0, padding, 0);
                 activity.getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM,
                         ActionBar.DISPLAY_SHOW_CUSTOM);
                 activity.getActionBar().setCustomView(actionBarSwitch, new ActionBar.LayoutParams(
                         ActionBar.LayoutParams.WRAP_CONTENT,
                         ActionBar.LayoutParams.WRAP_CONTENT,
-                        Gravity.CENTER_VERTICAL | Gravity.RIGHT));
+                        Gravity.CENTER_VERTICAL | Gravity.END));
             }
         }
 
@@ -282,7 +282,7 @@ public final class BluetoothSettings extends DeviceListPreferenceFragment {
 
                 // Available devices category
                 if (mAvailableDevicesCategory == null) {
-                    mAvailableDevicesCategory = new ProgressCategory(getActivity(), null);
+                    mAvailableDevicesCategory = new BluetoothProgressCategory(getActivity(), null);
                 } else {
                     mAvailableDevicesCategory.removeAll();
                 }

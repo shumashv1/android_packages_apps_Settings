@@ -19,82 +19,87 @@ package com.android.settings;
 import static android.provider.Settings.System.SCREEN_OFF_TIMEOUT;
 
 import android.app.ActivityManagerNative;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.admin.DevicePolicyManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.DialogInterface.OnMultiChoiceClickListener;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.database.ContentObserver;
+import android.hardware.display.DisplayManager;
+import android.hardware.display.WifiDisplay;
+import android.hardware.display.WifiDisplayStatus;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.os.Handler;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceCategory;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceScreen;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
+import android.util.AttributeSet;
 import android.util.Log;
 
 import com.android.internal.view.RotationPolicy;
 import com.android.settings.DreamSettings;
-import com.android.settings.cyanogenmod.DisplayRotation;
+import com.android.settings.Utils;
+
 import java.util.ArrayList;
 
 public class DisplaySettings extends SettingsPreferenceFragment implements
-        Preference.OnPreferenceChangeListener {
+        Preference.OnPreferenceChangeListener, OnPreferenceClickListener {
     private static final String TAG = "DisplaySettings";
 
     /** If there is no setting in the provider, use this. */
     private static final int FALLBACK_SCREEN_TIMEOUT_VALUE = 30000;
 
-    private static final String KEY_AUTOMATIC_BACKLIGHT = "backlight_widget";
+    private static final String STATUS_BAR_BRIGHTNESS_CONTROL = "status_bar_brightness_control";
     private static final String KEY_SCREEN_TIMEOUT = "screen_timeout";
     private static final String KEY_ACCELEROMETER = "accelerometer";
+    private static final String KEY_SWAP_VOLUME_BUTTONS = "swap_volume_buttons";
+    private static final String KEY_ROTATION = "rotation";
     private static final String KEY_FONT_SIZE = "font_size";
     private static final String KEY_NOTIFICATION_PULSE = "notification_pulse";
     private static final String KEY_SCREEN_SAVER = "screensaver";
+    private static final String KEY_WIFI_DISPLAY = "wifi_display";
     private static final String KEY_BATTERY_LIGHT = "battery_light";
-    private static final String KEY_DISPLAY_ROTATION = "display_rotation";
-    private static final String KEY_LOCKSCREEN_ROTATION = "lockscreen_rotation";
-    private static final String KEY_ELECTRON_BEAM_ANIMATION_ON = "electron_beam_animation_on";
-    private static final String KEY_ELECTRON_BEAM_ANIMATION_OFF = "electron_beam_animation_off";
-    private static final String KEY_ELECTRON_BEAM_CATEGORY_ANIMATION = "category_animation_options";
-    private static final String KEY_WAKEUP_CATEGORY = "category_wakeup_options";
-    private static final String KEY_VOLUME_WAKE = "pref_volume_wake";
+    private static final String KEY_POWER_CRT_MODE = "system_power_crt_mode";
+    private static final String KEY_POWER_CRT_SCREEN_OFF = "system_power_crt_screen_off";
 
-    private static final String ROTATION_ANGLE_0 = "0";
-    private static final String ROTATION_ANGLE_90 = "90";
-    private static final String ROTATION_ANGLE_180 = "180";
-    private static final String ROTATION_ANGLE_270 = "270";
-    private static final String ROTATION_ANGLE_DELIM = ", ";
-    private static final String ROTATION_ANGLE_DELIM_FINAL = " & ";
+    private static final int DLG_GLOBAL_CHANGE_WARNING = 1;
 
-    private CheckBoxPreference mLockScreenRotation;
-    private CheckBoxPreference mVolumeWake;
-    private CheckBoxPreference mElectronBeamAnimationOn;
-    private CheckBoxPreference mElectronBeamAnimationOff;
-    private PreferenceScreen mNotificationPulse;
-    private PreferenceScreen mBatteryPulse;
+    private DisplayManager mDisplayManager;
+
+    private CheckBoxPreference mStatusBarBrightnessControl;
 
     private CheckBoxPreference mAccelerometer;
-    private ListPreference mFontSizePref;
+    private CheckBoxPreference mSwapVolumeButtons;
+    private Preference mRotation;
+    private WarnedListPreference mFontSizePref;
+    private CheckBoxPreference mNotificationPulse;
+    private PreferenceScreen mBatteryPulse;
+    private ListPreference mCrtMode;
+    private CheckBoxPreference mCrtOn;
+    private CheckBoxPreference mCrtOff;
 
     private final Configuration mCurConfig = new Configuration();
 
     private ListPreference mScreenTimeoutPreference;
     private Preference mScreenSaverPreference;
-    private PreferenceScreen mDisplayRotationPreference;
-    private PreferenceScreen mAutomaticBacklightPreference;
 
-    private ContentObserver mAccelerometerRotationObserver = 
-            new ContentObserver(new Handler()) {
-        @Override
-        public void onChange(boolean selfChange) {
-            updateDisplayRotationPreferenceDescription();
-        }
-    };
+    private WifiDisplayStatus mWifiDisplayStatus;
+    private Preference mWifiDisplayPreference;
+
+    private int mAllowedRotationModes;
+    
+    private boolean mIsCrtOffChecked = false;
 
     private final RotationPolicy.RotationPolicyListener mRotationPolicyListener =
             new RotationPolicy.RotationPolicyListener() {
@@ -104,30 +109,53 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         }
     };
 
+    private Context mContext;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ContentResolver resolver = getActivity().getContentResolver();
 
         addPreferencesFromResource(R.xml.display_settings);
+        PreferenceScreen prefSet = getPreferenceScreen();
+        mContext = getActivity();
+
+        mStatusBarBrightnessControl = (CheckBoxPreference) prefSet.findPreference(STATUS_BAR_BRIGHTNESS_CONTROL);
+        mStatusBarBrightnessControl.setChecked((Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL, 0) == 1));
+        try {
+            if (Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.SCREEN_BRIGHTNESS_MODE) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC) {
+                mStatusBarBrightnessControl.setEnabled(false);
+                mStatusBarBrightnessControl.setSummary(R.string.status_bar_toggle_info);
+            }
+        } catch (SettingNotFoundException e) {
+        }
 
         mAccelerometer = (CheckBoxPreference) findPreference(KEY_ACCELEROMETER);
         mAccelerometer.setPersistent(false);
-        if (RotationPolicy.isRotationLockToggleSupported(getActivity())) {
-            // If rotation lock is supported, then we do not provide this option in
-            // Display settings.  However, is still available in Accessibility settings.
-            getPreferenceScreen().removePreference(mAccelerometer);
+
+        mSwapVolumeButtons = (CheckBoxPreference) prefSet.findPreference(KEY_SWAP_VOLUME_BUTTONS);
+        if (mSwapVolumeButtons != null) {
+            if (!Utils.hasVolumeRocker(getActivity())) {
+                prefSet.removePreference(mSwapVolumeButtons);
+            } else {
+                int swapVolumeKeys = Settings.System.getInt(getContentResolver(),
+                        Settings.System.SWAP_VOLUME_KEYS_ON_ROTATION, 0);
+                mSwapVolumeButtons.setChecked(swapVolumeKeys > 0);
+            }
         }
+
+        mRotation = findPreference(KEY_ROTATION);
+        mRotation.setOnPreferenceClickListener(this);
 
         mScreenSaverPreference = findPreference(KEY_SCREEN_SAVER);
         if (mScreenSaverPreference != null
                 && getResources().getBoolean(
-                        com.android.internal.R.bool.config_enableDreams) == false) {
+                        com.android.internal.R.bool.config_dreamsSupported) == false) {
             getPreferenceScreen().removePreference(mScreenSaverPreference);
         }
-        
-        mDisplayRotationPreference = (PreferenceScreen) findPreference(KEY_DISPLAY_ROTATION);
-        mLockScreenRotation = (CheckBoxPreference) findPreference(KEY_LOCKSCREEN_ROTATION);
+
         mScreenTimeoutPreference = (ListPreference) findPreference(KEY_SCREEN_TIMEOUT);
         final long currentTimeout = Settings.System.getLong(resolver, SCREEN_OFF_TIMEOUT,
                 FALLBACK_SCREEN_TIMEOUT_VALUE);
@@ -135,21 +163,23 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         mScreenTimeoutPreference.setOnPreferenceChangeListener(this);
         disableUnusableTimeouts(mScreenTimeoutPreference);
         updateTimeoutPreferenceDescription(currentTimeout);
-        updateDisplayRotationPreferenceDescription();
 
-        mAutomaticBacklightPreference = (PreferenceScreen) findPreference(KEY_AUTOMATIC_BACKLIGHT);
-        if (mAutomaticBacklightPreference != null
-                && !getResources().getBoolean(
-                        com.android.internal.R.bool.config_automatic_brightness_available)) {
-            getPreferenceScreen().removePreference(mAutomaticBacklightPreference);
-        }
+        mFontSizePref = (WarnedListPreference) findPreference(KEY_FONT_SIZE);
+        mFontSizePref.setOnPreferenceChangeListener(this);
+        mFontSizePref.setOnPreferenceClickListener(this);
 
-        mNotificationPulse = (PreferenceScreen) findPreference(KEY_NOTIFICATION_PULSE);
-        if (mNotificationPulse != null) {
-            if (!getResources().getBoolean(com.android.internal.R.bool.config_intrusiveNotificationLed)) {
-                getPreferenceScreen().removePreference(mNotificationPulse);
-            } else {
-                updateLightPulseDescription();
+        mNotificationPulse = (CheckBoxPreference) findPreference(KEY_NOTIFICATION_PULSE);
+        if (mNotificationPulse != null
+                && getResources().getBoolean(
+                        com.android.internal.R.bool.config_intrusiveNotificationLed) == false) {
+            getPreferenceScreen().removePreference(mNotificationPulse);
+        } else {
+            try {
+                mNotificationPulse.setChecked(Settings.System.getInt(resolver,
+                        Settings.System.NOTIFICATION_LIGHT_PULSE) == 1);
+                mNotificationPulse.setOnPreferenceChangeListener(this);
+            } catch (SettingNotFoundException snfe) {
+                Log.e(TAG, Settings.System.NOTIFICATION_LIGHT_PULSE + " not found");
             }
         }
 
@@ -163,98 +193,40 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
             }
         }
 
-/**
-        mElectronBeamAnimationOn = (CheckBoxPreference) findPreference(KEY_ELECTRON_BEAM_ANIMATION_ON);
-        mElectronBeamAnimationOff = (CheckBoxPreference) findPreference(KEY_ELECTRON_BEAM_ANIMATION_OFF);
-        mElectronBeamAnimationOn.setChecked(Settings.System.getInt(resolver,
-                Settings.System.ELECTRON_BEAM_ANIMATION_ON, 0) == 1);
-        mElectronBeamAnimationOff.setChecked(Settings.System.getInt(resolver,
-                Settings.System.ELECTRON_BEAM_ANIMATION_OFF, 1) == 1);
 
-        mElectronBeamAnimationOn = (CheckBoxPreference) findPreference(KEY_ELECTRON_BEAM_ANIMATION_ON);
-        if(getResources().getInteger(com.android.internal.R.integer.config_screenOnAnimation) >= 0) {
-            mElectronBeamAnimationOn.setChecked(Settings.System.getInt(resolver,
-                    Settings.System.ELECTRON_BEAM_ANIMATION_ON, 0) == 1);
-        } else {
-            getPreferenceScreen().removePreference(mElectronBeamAnimationOn);
-        }
-        mElectronBeamAnimationOff = (CheckBoxPreference) findPreference(KEY_ELECTRON_BEAM_ANIMATION_OFF);
-        if(getResources().getBoolean(com.android.internal.R.bool.config_screenOffAnimation)) {
-            mElectronBeamAnimationOff.setChecked(Settings.System.getInt(resolver,
-                    Settings.System.ELECTRON_BEAM_ANIMATION_OFF, 1) == 1);
-        } else {
-            getPreferenceScreen().removePreference(mElectronBeamAnimationOff);
-        }
-        if(getResources().getInteger(com.android.internal.R.integer.config_screenOnAnimation) < 0 &&
-              !getResources().getBoolean(com.android.internal.R.bool.config_screenOffAnimation)) {
-            getPreferenceScreen().removePreference((PreferenceCategory) findPreference(KEY_ELECTRON_BEAM_CATEGORY_ANIMATION));
-        }
-*/
-        mVolumeWake = (CheckBoxPreference) findPreference(KEY_VOLUME_WAKE);
-        if (mVolumeWake != null) {
-            if (!getResources().getBoolean(R.bool.config_show_volumeRockerWake)) {
-                getPreferenceScreen().removePreference(mVolumeWake);
-                getPreferenceScreen().removePreference((PreferenceCategory) findPreference(KEY_WAKEUP_CATEGORY));
-            } else {
-                mVolumeWake.setChecked(Settings.System.getInt(resolver,
-                        Settings.System.VOLUME_WAKE_SCREEN, 0) == 1);
-            }
+        mDisplayManager = (DisplayManager)getActivity().getSystemService(
+                Context.DISPLAY_SERVICE);
+        mWifiDisplayStatus = mDisplayManager.getWifiDisplayStatus();
+        mWifiDisplayPreference = (Preference)findPreference(KEY_WIFI_DISPLAY);
+        if (mWifiDisplayStatus.getFeatureState()
+                == WifiDisplayStatus.FEATURE_STATE_UNAVAILABLE) {
+            getPreferenceScreen().removePreference(mWifiDisplayPreference);
+            mWifiDisplayPreference = null;
         }
 
-    }
-
-    private void updateDisplayRotationPreferenceDescription() {
-        PreferenceScreen preference = mDisplayRotationPreference;
-        StringBuilder summary = new StringBuilder();
-        Boolean rotationEnabled = Settings.System.getInt(getContentResolver(),
-                Settings.System.ACCELEROMETER_ROTATION, 0) != 0;
-        Boolean lockScreenRotationEnabled = Settings.System.getInt(getContentResolver(),
-                Settings.System.LOCKSCREEN_ROTATION, 0) != 0;
-        int mode = Settings.System.getInt(getContentResolver(),
-                Settings.System.ACCELEROMETER_ROTATION_ANGLES,
-                DisplayRotation.ROTATION_0_MODE|DisplayRotation.ROTATION_90_MODE|DisplayRotation.ROTATION_270_MODE);
-
-        if (mLockScreenRotation != null) {
-            if (!getResources().getBoolean(com.android.internal.R.bool.config_enableLockScreenRotation)) {
-                getPreferenceScreen().removePreference(mLockScreenRotation);
-            } else {
-                mLockScreenRotation.setChecked(Settings.System.getInt(getContentResolver(),
-                        Settings.System.LOCKSCREEN_ROTATION, 0) != 1);
-            }
+        if (Utils.isTablet()) {
+            prefSet.removePreference(mStatusBarBrightnessControl);
         }
+        
+        // respect device default configuration
+        // true fades while false animates
+        boolean electronBeamFadesConfig = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_animateScreenLights);
 
-        if (!rotationEnabled) {
-            summary.append(getString(R.string.display_rotation_disabled));
-        } else {
-            ArrayList<String> rotationList = new ArrayList<String>();
-            String delim = "";
-            summary.append(getString(R.string.display_rotation_enabled) + " ");
-            if (lockScreenRotationEnabled) {
-                rotationList.add(getString(R.string.lock_screen_title));
-            }
-            if ((mode & DisplayRotation.ROTATION_0_MODE) != 0) {
-                rotationList.add(ROTATION_ANGLE_0);
-            }
-            if ((mode & DisplayRotation.ROTATION_90_MODE) != 0) {
-                rotationList.add(ROTATION_ANGLE_90);
-            }
-            if ((mode & DisplayRotation.ROTATION_180_MODE) != 0) {
-                rotationList.add(ROTATION_ANGLE_180);
-            }
-            if ((mode & DisplayRotation.ROTATION_270_MODE) != 0) {
-                rotationList.add(ROTATION_ANGLE_270);
-            }
-            for(int i=0;i<rotationList.size();i++) {
-                summary.append(delim).append(rotationList.get(i));
-                if (rotationList.size() >= 2 && (rotationList.size() - 2) == i) {
-                    delim = " " + ROTATION_ANGLE_DELIM_FINAL + " ";
-                } else {
-                    delim = ROTATION_ANGLE_DELIM + " ";
-                }
-            }
-            summary.append(" " + getString(R.string.display_rotation_unit));
-        }
-        preference.setSummary(summary);
+        // use this to enable/disable crt on feature
+        mIsCrtOffChecked = Settings.System.getInt(getActivity().getContentResolver(),
+                Settings.System.SYSTEM_POWER_ENABLE_CRT_OFF,
+                electronBeamFadesConfig ? 0 : 1) == 1;
+
+        mCrtOff = (CheckBoxPreference) findPreference(KEY_POWER_CRT_SCREEN_OFF);
+        mCrtOff.setChecked(mIsCrtOffChecked);
+
+        mCrtMode = (ListPreference) prefSet.findPreference(KEY_POWER_CRT_MODE);
+        int crtMode = Settings.System.getInt(getActivity().getContentResolver(),
+                Settings.System.SYSTEM_POWER_CRT_MODE, 0);
+        mCrtMode.setValue(String.valueOf(crtMode));
+        mCrtMode.setSummary(mCrtMode.getEntry());
+        mCrtMode.setOnPreferenceChangeListener(this);
     }
 
     private void updateTimeoutPreferenceDescription(long currentTimeout) {
@@ -266,15 +238,19 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         } else {
             final CharSequence[] entries = preference.getEntries();
             final CharSequence[] values = preference.getEntryValues();
-            int best = 0;
-            for (int i = 0; i < values.length; i++) {
-                long timeout = Long.parseLong(values[i].toString());
-                if (currentTimeout >= timeout) {
-                    best = i;
+            if (entries == null || entries.length == 0) {
+                summary = "";
+            } else {
+                int best = 0;
+                for (int i = 0; i < values.length; i++) {
+                    long timeout = Long.parseLong(values[i].toString());
+                    if (currentTimeout >= timeout) {
+                        best = i;
+                    }
                 }
+                summary = preference.getContext().getString(R.string.screen_timeout_summary,
+                        entries[best]);
             }
-            summary = preference.getContext().getString(R.string.screen_timeout_summary,
-                    entries[best]);
         }
         preference.setSummary(summary);
     }
@@ -315,15 +291,6 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         screenTimeoutPreference.setEnabled(revisedEntries.size() > 0);
     }
 
-    private void updateLightPulseDescription() {
-        if (Settings.System.getInt(getActivity().getContentResolver(),
-                Settings.System.NOTIFICATION_LIGHT_PULSE, 0) == 1) {
-            mNotificationPulse.setSummary(getString(R.string.notification_light_enabled));
-        } else {
-            mNotificationPulse.setSummary(getString(R.string.notification_light_disabled));
-        }
-    }
-
     private void updateBatteryPulseDescription() {
         if (Settings.System.getInt(getActivity().getContentResolver(),
                 Settings.System.BATTERY_LIGHT_ENABLED, 1) == 1) {
@@ -331,23 +298,53 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         } else {
             mBatteryPulse.setSummary(getString(R.string.notification_light_disabled));
         }
-    }
+     }
 
+    int floatToIndex(float val) {
+        String[] indices = getResources().getStringArray(R.array.entryvalues_font_size);
+        float lastVal = Float.parseFloat(indices[0]);
+        for (int i=1; i<indices.length; i++) {
+            float thisVal = Float.parseFloat(indices[i]);
+            if (val < (lastVal + (thisVal-lastVal)*.5f)) {
+                return i-1;
+            }
+            lastVal = thisVal;
+        }
+        return indices.length-1;
+    }
+    
+    public void readFontSizePreference(ListPreference pref) {
+        try {
+            mCurConfig.updateFrom(ActivityManagerNative.getDefault().getConfiguration());
+        } catch (RemoteException e) {
+            Log.w(TAG, "Unable to retrieve font size");
+        }
+
+        // mark the appropriate item in the preferences list
+        int index = floatToIndex(mCurConfig.fontScale);
+        pref.setValueIndex(index);
+
+        // report the current size in the summary text
+        final Resources res = getResources();
+        String[] fontSizeNames = res.getStringArray(R.array.entries_font_size);
+        pref.setSummary(String.format(res.getString(R.string.summary_font_size),
+                fontSizeNames[index]));
+    }
+    
     @Override
     public void onResume() {
         super.onResume();
-        updateDisplayRotationPreferenceDescription();
-        updateLightPulseDescription();
-        updateBatteryPulseDescription();
-
-        updateState();
 
         RotationPolicy.registerRotationPolicyListener(getActivity(),
                 mRotationPolicyListener);
 
-        getContentResolver().registerContentObserver(
-                Settings.System.getUriFor(Settings.System.ACCELEROMETER_ROTATION), true,
-                mAccelerometerRotationObserver);
+        if (mWifiDisplayPreference != null) {
+            getActivity().registerReceiver(mReceiver, new IntentFilter(
+                    DisplayManager.ACTION_WIFI_DISPLAY_STATUS_CHANGED));
+            mWifiDisplayStatus = mDisplayManager.getWifiDisplayStatus();
+        }
+
+        updateState();
     }
 
     @Override
@@ -357,25 +354,54 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         RotationPolicy.unregisterRotationPolicyListener(getActivity(),
                 mRotationPolicyListener);
 
-        getContentResolver().unregisterContentObserver(mAccelerometerRotationObserver);
+        if (mWifiDisplayPreference != null) {
+            getActivity().unregisterReceiver(mReceiver);
+        }
+    }
+
+    @Override
+    public Dialog onCreateDialog(int dialogId) {
+        if (dialogId == DLG_GLOBAL_CHANGE_WARNING) {
+            return Utils.buildGlobalChangeWarningDialog(getActivity(),
+                    R.string.global_font_change_title,
+                    new Runnable() {
+                        public void run() {
+                            mFontSizePref.click();
+                        }
+                    });
+        }
+        return null;
     }
 
     private void updateState() {
+        readFontSizePreference(mFontSizePref);
         updateAccelerometerRotationCheckbox();
         updateScreenSaverSummary();
+        updateWifiDisplaySummary();
     }
 
     private void updateScreenSaverSummary() {
-        mScreenSaverPreference.setSummary(
-            DreamSettings.isScreenSaverEnabled(mScreenSaverPreference.getContext())
-                ? R.string.screensaver_settings_summary_on
-                : R.string.screensaver_settings_summary_off);
+        if (mScreenSaverPreference != null) {
+            mScreenSaverPreference.setSummary(
+                    DreamSettings.getSummaryTextWithDreamName(getActivity()));
+        }
     }
 
-    private void updateAccelerometerRotationCheckbox() {
-        if (getActivity() == null) return;
-
-        mAccelerometer.setChecked(!RotationPolicy.isRotationLocked(getActivity()));
+    private void updateWifiDisplaySummary() {
+        if (mWifiDisplayPreference != null) {
+            switch (mWifiDisplayStatus.getFeatureState()) {
+                case WifiDisplayStatus.FEATURE_STATE_OFF:
+                    mWifiDisplayPreference.setSummary(R.string.wifi_display_summary_off);
+                    break;
+                case WifiDisplayStatus.FEATURE_STATE_ON:
+                    mWifiDisplayPreference.setSummary(R.string.wifi_display_summary_on);
+                    break;
+                case WifiDisplayStatus.FEATURE_STATE_DISABLED:
+                default:
+                    mWifiDisplayPreference.setSummary(R.string.wifi_display_summary_disabled);
+                    break;
+            }
+        }
     }
 
     public void writeFontSizePreference(Object objValue) {
@@ -387,30 +413,40 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         }
     }
 
+    private void updateAccelerometerRotationCheckbox() {
+        if (getActivity() == null) return;
+
+        mAccelerometer.setChecked(!RotationPolicy.isRotationLocked(getActivity()));
+    }
+
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        if (preference == mAccelerometer) {
+        if (preference == mStatusBarBrightnessControl) {
+            Settings.System.putInt(mContext.getContentResolver(),
+                    Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL,
+                    mStatusBarBrightnessControl.isChecked() ? 1 : 0);
+            return true;
+        } else if (preference == mAccelerometer) {
             RotationPolicy.setRotationLockForAccessibility(
                     getActivity(), !mAccelerometer.isChecked());
-        } else if (preference == mElectronBeamAnimationOn) {
-            Settings.System.putInt(getContentResolver(), Settings.System.ELECTRON_BEAM_ANIMATION_ON,
-                    mElectronBeamAnimationOn.isChecked() ? 1 : 0);
+        } else if (preference == mSwapVolumeButtons) {
+            Context context = getActivity().getApplicationContext();
+            Settings.System.putInt(context.getContentResolver(),
+                    Settings.System.SWAP_VOLUME_KEYS_ON_ROTATION,
+                    mSwapVolumeButtons.isChecked()
+                    ? (Utils.isTablet() ? 2 : 1)
+                    : 0);
+        } else if (preference == mNotificationPulse) {
+            boolean value = mNotificationPulse.isChecked();
+            Settings.System.putInt(getContentResolver(), Settings.System.NOTIFICATION_LIGHT_PULSE,
+                    value ? 1 : 0);
             return true;
-        } else if (preference == mElectronBeamAnimationOff) {
-            Settings.System.putInt(getContentResolver(), Settings.System.ELECTRON_BEAM_ANIMATION_OFF,
-                    mElectronBeamAnimationOff.isChecked() ? 1 : 0);
-            return true;
-        } else if (preference == mVolumeWake) {
-            Settings.System.putInt(getContentResolver(), Settings.System.VOLUME_WAKE_SCREEN,
-                    mVolumeWake.isChecked() ? 1 : 0);
-            return true;
-        } else if (preference == mLockScreenRotation) {
-            Settings.System.putInt(getContentResolver(), Settings.System.LOCKSCREEN_ROTATION,
-                    mLockScreenRotation.isChecked() ? 1 : 0);
-            updateDisplayRotationPreferenceDescription();
+        } else if (preference == mCrtOff) {
+            Settings.System.putInt(getActivity().getContentResolver(),
+                    Settings.System.SYSTEM_POWER_ENABLE_CRT_OFF,
+                    mCrtOff.isChecked() ? 1 : 0);
             return true;
         }
-
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
 
@@ -428,7 +464,72 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         if (KEY_FONT_SIZE.equals(key)) {
             writeFontSizePreference(objValue);
         }
-
+        
+        if (preference == mCrtMode) {
+            int crtMode = Integer.valueOf((String) objValue);
+            int index = mCrtMode.findIndexOfValue((String) objValue);
+            Settings.System.putInt(getActivity().getContentResolver(),
+                    Settings.System.SYSTEM_POWER_CRT_MODE, crtMode);
+            mCrtMode.setSummary(mCrtMode.getEntries()[index]);
+            return true;
+	}
         return true;
+    }
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(DisplayManager.ACTION_WIFI_DISPLAY_STATUS_CHANGED)) {
+                mWifiDisplayStatus = (WifiDisplayStatus)intent.getParcelableExtra(
+                        DisplayManager.EXTRA_WIFI_DISPLAY_STATUS);
+                updateWifiDisplaySummary();
+            }
+        }
+    };
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        if (preference == mFontSizePref) {
+            if (Utils.hasMultipleUsers(getActivity())) {
+                showDialog(DLG_GLOBAL_CHANGE_WARNING);
+                return true;
+            } else {
+                mFontSizePref.click();
+            }
+        } else if (preference == mRotation) {
+            mAllowedRotationModes = Settings.System.getInt(getActivity().getContentResolver(), Settings.System
+                    .ACCELEROMETER_ROTATION_ANGLES, -1);
+            if (mAllowedRotationModes < 0) {
+                mAllowedRotationModes = Utils.getScreenType(getActivity())
+                        == Utils.DEVICE_TABLET ? (1 | 2 | 4 | 8) :  (1 | 2 | 8);
+            }
+            AlertDialog.Builder d = new AlertDialog.Builder(getActivity());
+            d.setTitle(R.string.rotation_settings_title);
+            String[] entries = getResources().getStringArray(R.array.rotation_mode_entries);
+            final String[] values = getResources().getStringArray(R.array.rotation_mode_values);
+            boolean[] selectedRotations = {(mAllowedRotationModes & 1) != 0, (mAllowedRotationModes & 2) != 0,
+                    (mAllowedRotationModes & 4) != 0, (mAllowedRotationModes & 8) != 0};
+            d.setMultiChoiceItems(entries, selectedRotations, new OnMultiChoiceClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                    int value = Integer.parseInt(values[which]);
+                    if(isChecked) {
+                        mAllowedRotationModes |= value;
+                    } else {
+                        mAllowedRotationModes &= ~value;
+                    }
+                }
+            });
+            d.setPositiveButton(android.R.string.ok, new OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Settings.System.putInt(getActivity().getContentResolver(), Settings.System
+                            .ACCELEROMETER_ROTATION_ANGLES, mAllowedRotationModes);
+                }				
+            });
+            d.show();
+            return true;
+        }
+        return false;
     }
 }
