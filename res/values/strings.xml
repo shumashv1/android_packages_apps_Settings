@@ -4476,8 +4476,6 @@
 
     <!-- HALO -->
     <string name="halo_settings_title">HALO Settings</string>
-    <string name="halo_enabled_title">Enable HALO</string>
-    <string name="halo_enabled_summary">If checked enable HALO feature (floating window on recent apps will not be affected)</string>
     <string name="halo_hide_title">Hide HALO after activity</string>
     <string name="halo_hide_summary">HALO will appear for incoming tasks and scroll out of sight after a while</string>
     <string name="halo_reversed_title">Reverse HALO</string>
@@ -4488,15 +4486,6 @@
     <string name="halo_state_white">White list</string>
     <string name="halo_pause_title">Pause active app</string>
     <string name="halo_pause_summary">When opening an app with HALO the underlying app will get paused</string>
-
-    <string name="halo_size_title">HALO size</string>
-    <string name="halo_size_summary">Defines how big HALO is going to be</string>
-    <string name="halo_size_miniscule">Miniscule</string>
-    <string name="halo_size_small">Small</string>
-    <string name="halo_size_default">@string/pie_mode_default</string>
-    <string name="halo_size_large">Large</string>
-    <string name="halo_size_gigantic">Gigantic</string>
-    <string name="halo_size_monster">Monster</string>
 
     <!-- Quick pulldown -->
     <string name="quick_pulldown_title">Quick pulldown</string>
@@ -4573,11 +4562,6 @@
     <string name="quick_settings_disabled">Disabled</string>
     <string name="title_no_notifications_pulldown">Quick pulldown without notifications</string>
     <string name="summary_no_notifications_pulldown">Pulldown quick settings if no notifications are present</string>
-    <string name="no_notifications_pulldown_summary_nonperm">Pulldown quick settings if no non-permanent notifications are present</string>
-    <string name="no_notifications_pulldown_summary_all">Pulldown quick settings if no notifications are present</string>
-    <string name="no_notifications_pulldown_off">Off</string>
-    <string name="no_notifications_pulldown_nonperm">Non-permanent only</string>
-    <string name="no_notifications_pulldown_all">All Notifications</string>
 
     <!-- QuickSettings style options -->
     <string name="quicksettings_tiles_style">Quick Settings style</string>
@@ -4592,8 +4576,7 @@
     <string name="quick_tiles_bg_pressed_color_title">Tiles pressed background color</string>
     <string name="flip_qs_tiles_title">Flip tiles</string>
     <string name="flip_qs_tiles_summary">Flips the tiles on touch</string>
-    <string name="qs_random_colors_title">QS Random colors </string>
-    <string name="qs_random_colors_summary">Sets Random colors for QS onFlip</string>
+
     <string name="none">None</string> 
 
     <!-- Reset tiles -->
@@ -4630,9 +4613,9 @@
     <string name="pie_angle_summary">Adjust the angle between screen\'s edge and pie</string>
     <string name="pie_angle_none">None</string>
     <string name="pie_angle_small">Small</string>
-    <string name="pie_angle_normal">Normal (default)</string>
-    <string name="pie_angle_big">Big</string>
-    <string name="pie_angle_huge">Huge</string>
+    <string name="pie_angle_big">Normal (default)</string>
+    <string name="pie_angle_huge">Big</string>
+    <string name="pie_angle_super">Huge</string>
     
     <string name="pie_gap_title">Item gap</string>
     <string name="pie_gap_summary">Adjust the gap that separates pie elements</string>
@@ -4655,24 +4638,13 @@
 
     <string name="pie_trigger_title">Trigger area</string>
     <string name="pie_trigger_summary">Determine the size of the region that registers swipes</string>
-    <string name="pie_trigger_none">None (disable)</string>
+    <string name="pie_trigger_none">None</string>
     <string name="pie_trigger_small">@string/pie_size_small</string>
     <string name="pie_trigger_normal">@string/pie_mode_default</string>
-    <string name="pie_trigger_big">@string/pie_angle_big</string>
-    <string name="pie_trigger_huge">@string/pie_angle_huge</string>
+    <string name="pie_trigger_big">Big</string>
+    <string name="pie_trigger_huge">Huge</string>
 
-    <!-- Navigation Bar #CM -->
-    <string name="navigation_reset_title">@string/lock_screen_shortcuts_reset</string>
-    <string name="navigation_bar_title">Navigation controls</string>
-    <string name="navigation_bar_help_text">1 - To begin editing, tap the lock icon\n\n2 - Tap any button to assign or change functionality\n\n3 - Long press any button to rearrange the order\n\n4 - To save, tap the lock icon again\n\n5 - To restore system default, tap the reset button\n\n</string>
-    <string name="navigation_bar_tips">&#8226; Actions can only be assigned to one button at a time\n\n&#8226; The home button cannot be re-assigned\n\n&#8226; Side buttons cannot be rearranged</string>
-    <string name="navigation_bar_tips_title">Quick tips</string>
-    <string name="navigation_bar_reset_message">Delete current settings and restore to default?</string>
-    <string name="navigation_bar_save_message">Navigation bar settings saved</string>
-    <string name="navigation_bar_reset_toast">Navigation bar reset to default</string>
-    <string name="navigation_bar_menu_editable">Editable</string>
-    <string name="navigation_bar_menu_locked">Locked</string>
-    
+
     <!-- Hybrid sub menu [CHAR LIMIT=30] -->
     <string name="hybrid_settings">Hybrid Properties</string>
 
@@ -4805,16 +4777,7 @@
     <!-- Permissions Management -->
     <string name="permissions_settings_title">Permissions</string>
 
-    <!-- PACStats -->
-    <string name="pacstats_settings_title">PACStats</string>
-
-    <!-- Share PAC-Man ROM -->
-   <string name="share_pacrom">Share PAC-Man ROM</string>
-   <string name="share_pacrom_summary">Let people know you use PAC-Man ROM</string>
-   <string name="share_message">Try PAC-Man ROM! \nWebsite : http://pac-rom.com \nIRC : #pac-rom \nDownload : http://pacman.basketbuild.com</string>
-   <string name="share_chooser_title">Via..</string>
-
-    <!-- Lockscreen Security Options -->
+   <!-- Lockscreen Security Options -->
     <string name="lock_before_unlock_title">Show slider before secure unlock</string>
     <string name="lock_before_unlock_summary">Show slider lockscreen before secure unlock mechanism</string>
     <string name="lockscreen_security_grouptitle">Security options</string>
