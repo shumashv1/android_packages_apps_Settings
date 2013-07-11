@@ -39,6 +39,8 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.android.settings.R;
+
 public class DeviceInfoSettings extends SettingsPreferenceFragment {
 
     private static final String LOG_TAG = "DeviceInfoSettings";
