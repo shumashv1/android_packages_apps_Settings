@@ -4471,7 +4471,7 @@
     <string name="icon_picker_nav">Navigation</string>
 
     <!-- Bars sub menu [CHAR LIMIT=30] -->
-    <string name="tool_bar_status_header">Status bar</string>
+    <string name="tool_bar_status_header">Other Status bar Options</string>
     <string name="tool_bar_navigation_header">Navigation bar</string>
 
     <!-- HALO -->
@@ -4564,6 +4564,11 @@
     <string name="quick_settings_disabled">Disabled</string>
     <string name="title_no_notifications_pulldown">Quick pulldown without notifications</string>
     <string name="summary_no_notifications_pulldown">Pulldown quick settings if no notifications are present</string>
+    <string name="no_notifications_pulldown_summary_nonperm">Pulldown quick settings if no non-permanent notifications are present</string>
+    <string name="no_notifications_pulldown_summary_all">Pulldown quick settings if no notifications are present</string>
+    <string name="no_notifications_pulldown_off">Off</string>
+    <string name="no_notifications_pulldown_nonperm">Non-permanent only</string>
+    <string name="no_notifications_pulldown_all">All Notifications</string>
 
     <!-- QuickSettings style options -->
     <string name="quicksettings_tiles_style">Quick Settings style</string>
@@ -4578,7 +4583,8 @@
     <string name="quick_tiles_bg_pressed_color_title">Tiles pressed background color</string>
     <string name="flip_qs_tiles_title">Flip tiles</string>
     <string name="flip_qs_tiles_summary">Flips the tiles on touch</string>
-
+    <string name="qs_random_colors_title">QS Random colors </string>
+    <string name="qs_random_colors_summary">Sets Random colors for QS onFlip</string>
     <string name="none">None</string> 
 
     <!-- Reset tiles -->
@@ -4790,12 +4796,17 @@
     <!-- Permissions Management -->
     <string name="permissions_settings_title">Permissions</string>
 
-	<!-- PACStats -->
-	<string name="pacstats_settings_title">PACStats</string>
+    <!-- PACStats -->
+    <string name="pacstats_settings_title">PACStats</string>
 
     <!-- Share PAC-Man ROM -->
    <string name="share_pacrom">Share PAC-Man ROM</string>
    <string name="share_pacrom_summary">Let people know you use PAC-Man ROM</string>
    <string name="share_message">Try PAC-Man ROM! \nWebsite : http://pac-rom.com \nIRC : #pac-rom \nDownload : http://pacman.basketbuild.com</string>
    <string name="share_chooser_title">Via..</string>
+
+    <!-- Lockscreen Security Options -->
+    <string name="lock_before_unlock_title">Show slider before secure unlock</string>
+    <string name="lock_before_unlock_summary">Show slider lockscreen before secure unlock mechanism</string>
+    <string name="lockscreen_security_grouptitle">Security options</string>
 </resources>
