@@ -4476,8 +4476,6 @@
 
     <!-- HALO -->
     <string name="halo_settings_title">HALO Settings</string>
-    <string name="halo_enabled_title">Enable HALO</string>
-    <string name="halo_enabled_summary">If checked enable HALO feature (floating window on recent apps will not be affected)</string>
     <string name="halo_hide_title">Hide HALO after activity</string>
     <string name="halo_hide_summary">HALO will appear for incoming tasks and scroll out of sight after a while</string>
     <string name="halo_reversed_title">Reverse HALO</string>
@@ -4805,16 +4803,7 @@
     <!-- Permissions Management -->
     <string name="permissions_settings_title">Permissions</string>
 
-    <!-- PACStats -->
-    <string name="pacstats_settings_title">PACStats</string>
-
-    <!-- Share PAC-Man ROM -->
-   <string name="share_pacrom">Share PAC-Man ROM</string>
-   <string name="share_pacrom_summary">Let people know you use PAC-Man ROM</string>
-   <string name="share_message">Try PAC-Man ROM! \nWebsite : http://pac-rom.com \nIRC : #pac-rom \nDownload : http://pacman.basketbuild.com</string>
-   <string name="share_chooser_title">Via..</string>
-
-    <!-- Lockscreen Security Options -->
+   <!-- Lockscreen Security Options -->
     <string name="lock_before_unlock_title">Show slider before secure unlock</string>
     <string name="lock_before_unlock_summary">Show slider lockscreen before secure unlock mechanism</string>
     <string name="lockscreen_security_grouptitle">Security options</string>
