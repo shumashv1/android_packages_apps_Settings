@@ -542,8 +542,8 @@
     <string name="wifi_settings_title" msgid="3103415012485692233">"Wi-Fi"</string>
     <string name="wifi_settings_summary" msgid="668767638556052820">"Vezeték nélküli hozzáférési pontok beállítása és kezelése"</string>
     <string name="wifi_setup_wizard_title" msgid="70277346338812325">"Wi-Fi hálózat kiválasztása"</string>
-    <string name="wifi_starting" msgid="6732377932749942954">"Bekapcsolja a Wi-Fit?"</string>
-    <string name="wifi_stopping" msgid="8952524572499500804">"Wi-Fi kikapcsolása..."</string>
+    <string name="wifi_starting" msgid="6716593470710880000">"Wi-Fi bekapcsolása?"</string>
+    <string name="wifi_stopping" msgid="244864762599017659">"Wi-Fi kikapcsolása..."</string>
     <string name="wifi_error" msgid="3207971103917128179">"Hiba"</string>
     <string name="wifi_in_airplane_mode" msgid="8652520421778203796">"Repülőgép üzemmódban"</string>
     <string name="wifi_fail_to_scan" msgid="1265540342578081461">"Nem lehet beolvasni a hálózatokat"</string>
@@ -573,8 +573,7 @@
     <string name="wifi_menu_forget" msgid="8736964302477327114">"Hálózat elfelejtése"</string>
     <string name="wifi_menu_modify" msgid="2068554918652440105">"Hálózat módosítása"</string>
     <string name="wifi_empty_list_wifi_off" msgid="4722299515264875943">"Kapcsolja be a WiFi-t a hálózatok megjelenítéséhez"</string>
-    <string name="wifi_empty_list_wifi_on" msgid="8746108031587976356">"Wi-Fi hálózatok keresése..."</string>
-    <string name="wifi_empty_list_user_restricted" msgid="8280257225419947565">"Nincs jogosultsága a Wi‑Fi hálózat módosítására."</string>
+    <string name="wifi_empty_list_wifi_on" msgid="3354911729026237372">"Wi-Fi hálózatok keresése..."</string>
     <string name="wifi_other_network" msgid="1048006316504242214">"Másik hálózat..."</string>
     <string name="wifi_more" msgid="3195296805089107950">"Egyebek"</string>
     <string name="wifi_setup_wps" msgid="8128702488486283957">"Automat. beállítás (WPS)"</string>
@@ -1883,25 +1882,4 @@
     <string name="user_picture_title" msgid="7297782792000291692">"Fotóazonosító"</string>
     <string name="cell_broadcast_settings" msgid="8415582011920085222">"Cellán belüli adások"</string>
     <string name="cell_broadcast_settings_summary" msgid="3301339398950905913">"Válassza ki a megjelenítendő vészriasztások típusait."</string>
-    <string name="user_restrictions_title" msgid="7745810037152772035">"Alkalmazás- és tartalomkorlátozások"</string>
-    <string name="user_rename" msgid="8523499513614655279">"ÁTNEVEZÉS"</string>
-    <string name="app_restrictions_custom_label" msgid="6160672982086584261">"Alkalmazáskorlátozások beállítása"</string>
-    <string name="user_restrictions_controlled_by" msgid="3164078767438313899">"A(z) <xliff:g id="APP">%1$s</xliff:g> irányítja"</string>
-    <string name="app_not_supported_in_limited" msgid="913035259626149121">"Az alkalmazás nem támogatott korlátozott profilok esetében"</string>
-    <string name="app_sees_restricted_accounts" msgid="7503264525057246240">"Ez az alkalmazás hozzáfér az Ön fiókjaihoz"</string>
-    <string name="restriction_wifi_config_title" msgid="8889556384136994814">"Wi‑Fi és mobil"</string>
-    <string name="restriction_wifi_config_summary" msgid="70888791513065244">"Lehetővé teszi a Wi‑Fi és mobilbeállítások módosítását."</string>
-    <string name="restriction_bluetooth_config_title" msgid="8871681580962503671">"Bluetooth"</string>
-    <string name="restriction_bluetooth_config_summary" msgid="8372319681287562506">"A bluetoothos párosítások és beállítások engedélyezése"</string>
-    <string name="restriction_nfc_enable_title" msgid="5888100955212267941">"NFC"</string>
-    <string name="restriction_nfc_enable_summary" product="tablet" msgid="3891097373396149915">"Lehetővé teszi az adatcserét, ha a táblagép érintkezik egy másik eszközzel."</string>
-    <string name="restriction_nfc_enable_summary" product="default" msgid="825331120501418592">"Lehetővé teszi az adatcserét, ha a telefon érintkezik egy másik készülékkel."</string>
-    <string name="restriction_location_enable_title" msgid="8134436816263688497">"Helyhozzáférés"</string>
-    <string name="restriction_location_enable_summary" msgid="3489765572281788755">"Az alkalmazások használhatják a helyadatokat."</string>
-    <string name="wizard_back" msgid="5567007959434765743">"Vissza"</string>
-    <string name="wizard_next" msgid="3606212602795100640">"Tovább"</string>
-    <string name="wizard_finish" msgid="3286109692700083252">"Befejezés"</string>
-    <string name="user_image_take_photo" msgid="1280274310152803669">"Fotó készítése"</string>
-    <string name="user_image_choose_photo" msgid="7940990613897477057">"Fotó kiválasztása a Galériából"</string>
-    <string name="regulatory_info_text" msgid="5623087902354026557"></string>
 </resources>

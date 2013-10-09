@@ -15,7 +15,10 @@
      limitations under the License.
 -->
 <resources>
-    <!-- Height of a normal list item in edit playlist mode -->
+    <!-- Light settings dialog -->
+    <dimen name="dialog_light_settings_width">400dip</dimen>
+
+    <!-- height of a normal list item in edit playlist mode -->
     <dimen name="normal_height">64dip</dimen>
     <!-- Height of an expanded list item in edit playlist mode -->
     <dimen name="expanded_height">128dip</dimen>
@@ -26,6 +29,8 @@
     <dimen name="navbar_search_outerring_radius">170dp</dimen>
     <!-- Diameter of outer shape drawable shown in navbar search-->
     <dimen name="navbar_search_outerring_diameter">340dp</dimen>
+    <!-- Height of search panel including navigation bar height -->
+    <dimen name="navbar_search_panel_height">230dip</dimen>
 
     <dimen name="auto_brightness_preview_text_size">8dip</dimen>
     <dimen name="auto_brightness_preview_stroke_width">1dip</dimen>

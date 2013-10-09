@@ -21,9 +21,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.CursorLoader;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -60,9 +57,6 @@ public class ApnEditor extends SettingsPreferenceFragment
     private final static String KEY_ROAMING_PROTOCOL = "apn_roaming_protocol";
     private final static String KEY_CARRIER_ENABLED = "carrier_enabled";
     private final static String KEY_BEARER = "bearer";
-    protected static final String EDIT_ACTION = "edit_action";
-    protected static final String EDIT_DATA = "edit_data";
-    private final static String KEY_MVNO_TYPE = "mvno_type";
 
     private static final int MENU_DELETE = Menu.FIRST;
     private static final int MENU_SAVE = Menu.FIRST + 1;
@@ -612,18 +606,22 @@ public class ApnEditor extends SettingsPreferenceFragment
         return super.onCreateDialog(id);
     }
 
-    private void deleteApn() {
-        new AlertDialog.Builder(getActivity())
-        .setMessage(R.string.confirm_delete_apn)
-        .setCancelable(true)
-        .setPositiveButton(R.string.delete,new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog,int id) {
-                getContentResolver().delete(mUri, null, null);
-                finish();
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+        super.onPrepareDialog(id, dialog);
+
+        if (id == ERROR_DIALOG_ID) {
+            String msg = getErrorMsg();
+
+            if (msg != null) {
+                ((AlertDialog)dialog).setMessage(msg);
             }
-        })
-        .setNegativeButton(R.string.cancel, null)
-        .show();
+        }
+    }
+
+    private void deleteApn() {
+        getContentResolver().delete(mUri, null, null);
+        finish();
     }
 
     private String starify(String value) {

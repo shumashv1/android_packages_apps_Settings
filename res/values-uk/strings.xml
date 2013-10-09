@@ -1880,25 +1880,4 @@
     <string name="user_picture_title" msgid="7297782792000291692">"Ідентифікатор фотографії"</string>
     <string name="cell_broadcast_settings" msgid="8415582011920085222">"Широкомовні повідомлення мережі"</string>
     <string name="cell_broadcast_settings_summary" msgid="3301339398950905913">"Виберіть типи сповіщень про надзвичайні ситуації, які мають відображатися."</string>
-    <string name="user_restrictions_title" msgid="7745810037152772035">"Обмеження для програм і вмісту"</string>
-    <string name="user_rename" msgid="8523499513614655279">"ПЕРЕЙМЕНУВАТИ"</string>
-    <string name="app_restrictions_custom_label" msgid="6160672982086584261">"Установити обмеження для програм"</string>
-    <string name="user_restrictions_controlled_by" msgid="3164078767438313899">"Керується програмою <xliff:g id="APP">%1$s</xliff:g>"</string>
-    <string name="app_not_supported_in_limited" msgid="913035259626149121">"Ця програма не підтримується в обмежених профілях"</string>
-    <string name="app_sees_restricted_accounts" msgid="7503264525057246240">"Ця програма може отримувати доступ до ваших облікових записів"</string>
-    <string name="restriction_wifi_config_title" msgid="8889556384136994814">"Wi‑Fi і мобільні мережі"</string>
-    <string name="restriction_wifi_config_summary" msgid="70888791513065244">"Дозволити вносити зміни в налаштування Wi‑Fi і мобільних мереж"</string>
-    <string name="restriction_bluetooth_config_title" msgid="8871681580962503671">"Bluetooth"</string>
-    <string name="restriction_bluetooth_config_summary" msgid="8372319681287562506">"Дозволити вносити зміни в створення пари та налаштування Bluetooth"</string>
-    <string name="restriction_nfc_enable_title" msgid="5888100955212267941">"NFC"</string>
-    <string name="restriction_nfc_enable_summary" product="tablet" msgid="3891097373396149915">"Дозволити обмін даними, коли планшетний ПК торкнеться іншого пристрою"</string>
-    <string name="restriction_nfc_enable_summary" product="default" msgid="825331120501418592">"Дозволити обмін даними, коли телефон торкнеться іншого пристрою"</string>
-    <string name="restriction_location_enable_title" msgid="8134436816263688497">"Доступ до місцезнаходження"</string>
-    <string name="restriction_location_enable_summary" msgid="3489765572281788755">"Дозволити програмам використовувати дані про місцезнаходження"</string>
-    <string name="wizard_back" msgid="5567007959434765743">"Назад"</string>
-    <string name="wizard_next" msgid="3606212602795100640">"Далі"</string>
-    <string name="wizard_finish" msgid="3286109692700083252">"Завершити"</string>
-    <string name="user_image_take_photo" msgid="1280274310152803669">"Зробити фото"</string>
-    <string name="user_image_choose_photo" msgid="7940990613897477057">"Вибрати фото з галереї"</string>
-    <string name="regulatory_info_text" msgid="5623087902354026557"></string>
 </resources>

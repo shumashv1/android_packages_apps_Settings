@@ -1883,25 +1883,4 @@
     <string name="user_picture_title" msgid="7297782792000291692">"ID de photo"</string>
     <string name="cell_broadcast_settings" msgid="8415582011920085222">"Diffusions cellulaires"</string>
     <string name="cell_broadcast_settings_summary" msgid="3301339398950905913">"Sélectionnez les types d\'alertes d\'urgence à afficher."</string>
-    <string name="user_restrictions_title" msgid="7745810037152772035">"Limitations accès applis et contenu"</string>
-    <string name="user_rename" msgid="8523499513614655279">"RENOMMER"</string>
-    <string name="app_restrictions_custom_label" msgid="6160672982086584261">"Définir des restrictions d\'applis"</string>
-    <string name="user_restrictions_controlled_by" msgid="3164078767438313899">"Contrôlées par <xliff:g id="APP">%1$s</xliff:g>"</string>
-    <string name="app_not_supported_in_limited" msgid="913035259626149121">"Cette application n\'accepte pas les profils limités."</string>
-    <string name="app_sees_restricted_accounts" msgid="7503264525057246240">"Cette application peut accéder à vos comptes."</string>
-    <string name="restriction_wifi_config_title" msgid="8889556384136994814">"Wi‑Fi et données mobiles"</string>
-    <string name="restriction_wifi_config_summary" msgid="70888791513065244">"Autoriser les modifications des paramètres du Wi‑Fi et des données mobiles"</string>
-    <string name="restriction_bluetooth_config_title" msgid="8871681580962503671">"Bluetooth"</string>
-    <string name="restriction_bluetooth_config_summary" msgid="8372319681287562506">"Autoriser les modifications des associations et des paramètres Bluetooth"</string>
-    <string name="restriction_nfc_enable_title" msgid="5888100955212267941">"NFC"</string>
-    <string name="restriction_nfc_enable_summary" product="tablet" msgid="3891097373396149915">"Autoriser l\'échange de données lorsque la tablette est en contact avec un autre appareil"</string>
-    <string name="restriction_nfc_enable_summary" product="default" msgid="825331120501418592">"Autoriser l\'échange de données lorsque le téléphone est en contact avec un autre appareil"</string>
-    <string name="restriction_location_enable_title" msgid="8134436816263688497">"Accès aux données de localisation"</string>
-    <string name="restriction_location_enable_summary" msgid="3489765572281788755">"Autoriser les applications à utiliser vos données de localisation"</string>
-    <string name="wizard_back" msgid="5567007959434765743">"Retour"</string>
-    <string name="wizard_next" msgid="3606212602795100640">"Suivant"</string>
-    <string name="wizard_finish" msgid="3286109692700083252">"Terminer"</string>
-    <string name="user_image_take_photo" msgid="1280274310152803669">"Prendre une photo"</string>
-    <string name="user_image_choose_photo" msgid="7940990613897477057">"Sélectionner une photo dans la galerie"</string>
-    <string name="regulatory_info_text" msgid="5623087902354026557"></string>
 </resources>

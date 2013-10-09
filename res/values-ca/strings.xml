@@ -1846,8 +1846,7 @@
     <string name="user_add_user_message_long" msgid="3086244205384741788">"Pots compartir aquest dispositiu amb altres persones si crees usuaris addicionals. Cada usuari té el seu propi espai, que podrà personalitzar amb les seves aplicacions, els seus fons de pantalla i altres elements. Els usuaris també podran ajustar la configuració de la tauleta, com ara la Wi-Fi, que pot afectar altres persones.\n\nQuan hagis creat un usuari nou, aquesta persona haurà de dur a terme un procés de configuració.\n\nQualsevol usuari pot acceptar els permisos actualitzats d\'aplicacions en nom de la resta d\'usuaris."</string>
     <string name="user_add_user_message_short" msgid="3310933423737035428">"Quan afegeixis un usuari nou, aquesta persona ha de dur a terme un procés de configuració.\n\nQualsevol usuari pot acceptar permisos d\'aplicacions actualitzats en nom de la resta d\'usuaris."</string>
     <string name="user_setup_dialog_title" msgid="1765794166801864563">"Vols configurar l\'usuari ara?"</string>
-    <string name="user_setup_dialog_message" msgid="614037943337008555">"Comprova que l\'usuari té accés a la tauleta i pot configurar el seu espai."</string>
-    <string name="user_setup_profile_dialog_message" msgid="3896568553327558731">"Vols configurar el perfil ara?"</string>
+    <string name="user_setup_dialog_message" msgid="614037943337008555">"Comprova que l\'usuari té accés a la tauleta i pot configurar el seu espai"</string>
     <string name="user_setup_button_setup_now" msgid="3391388430158437629">"Configura ara"</string>
     <string name="user_setup_button_setup_later" msgid="3068729597269172401">"Ara no"</string>
     <string name="user_cannot_manage_message" product="tablet" msgid="8440449301994432789">"Només el propietari de la tauleta pot gestionar els usuaris."</string>

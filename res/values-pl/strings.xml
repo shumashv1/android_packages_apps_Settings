@@ -1881,25 +1881,4 @@
     <string name="user_picture_title" msgid="7297782792000291692">"Identyfikator zdjęcia"</string>
     <string name="cell_broadcast_settings" msgid="8415582011920085222">"Transmisje komórkowe"</string>
     <string name="cell_broadcast_settings_summary" msgid="3301339398950905913">"Wybierz typy alertów o zagrożeniu, które chcesz wyświetlić."</string>
-    <string name="user_restrictions_title" msgid="7745810037152772035">"Ograniczenia aplikacji i zawartości"</string>
-    <string name="user_rename" msgid="8523499513614655279">"ZMIEŃ NAZWĘ"</string>
-    <string name="app_restrictions_custom_label" msgid="6160672982086584261">"Ustaw ograniczenia aplikacji"</string>
-    <string name="user_restrictions_controlled_by" msgid="3164078767438313899">"Kontrolowane przez <xliff:g id="APP">%1$s</xliff:g>"</string>
-    <string name="app_not_supported_in_limited" msgid="913035259626149121">"Ta aplikacja nie jest obsługiwana w profilach z ograniczeniami"</string>
-    <string name="app_sees_restricted_accounts" msgid="7503264525057246240">"Ta aplikacja może uzyskać dostęp do Twoich kont"</string>
-    <string name="restriction_wifi_config_title" msgid="8889556384136994814">"Sieć Wi‑Fi i komórkowa"</string>
-    <string name="restriction_wifi_config_summary" msgid="70888791513065244">"Zezwalaj na modyfikowanie ustawień sieci Wi‑Fi i komórkowej"</string>
-    <string name="restriction_bluetooth_config_title" msgid="8871681580962503671">"Bluetooth"</string>
-    <string name="restriction_bluetooth_config_summary" msgid="8372319681287562506">"Zezwalaj na modyfikowanie parowań i ustawień Bluetooth"</string>
-    <string name="restriction_nfc_enable_title" msgid="5888100955212267941">"Komunikacja NFC"</string>
-    <string name="restriction_nfc_enable_summary" product="tablet" msgid="3891097373396149915">"Zezwalaj na wymianę danych, gdy tablet dotyka innego urządzenia"</string>
-    <string name="restriction_nfc_enable_summary" product="default" msgid="825331120501418592">"Zezwalaj na wymianę danych, gdy telefon dotyka innego urządzenia"</string>
-    <string name="restriction_location_enable_title" msgid="8134436816263688497">"Dostęp do lokalizacji"</string>
-    <string name="restriction_location_enable_summary" msgid="3489765572281788755">"Zezwalaj aplikacji na korzystanie z informacji o lokalizacji"</string>
-    <string name="wizard_back" msgid="5567007959434765743">"Wróć"</string>
-    <string name="wizard_next" msgid="3606212602795100640">"Dalej"</string>
-    <string name="wizard_finish" msgid="3286109692700083252">"Zakończ"</string>
-    <string name="user_image_take_photo" msgid="1280274310152803669">"Zrób zdjęcie"</string>
-    <string name="user_image_choose_photo" msgid="7940990613897477057">"Wybierz zdjęcie z galerii"</string>
-    <string name="regulatory_info_text" msgid="5623087902354026557"></string>
 </resources>

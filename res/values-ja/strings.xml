@@ -1887,25 +1887,4 @@
     <string name="user_picture_title" msgid="7297782792000291692">"画像ID"</string>
     <string name="cell_broadcast_settings" msgid="8415582011920085222">"緊急警報"</string>
     <string name="cell_broadcast_settings_summary" msgid="3301339398950905913">"表示する緊急警報の種類を選択してください。"</string>
-    <string name="user_restrictions_title" msgid="7745810037152772035">"アプリとコンテンツの制限"</string>
-    <string name="user_rename" msgid="8523499513614655279">"名前を変更"</string>
-    <string name="app_restrictions_custom_label" msgid="6160672982086584261">"アプリの制限を設定"</string>
-    <string name="user_restrictions_controlled_by" msgid="3164078767438313899">"<xliff:g id="APP">%1$s</xliff:g>が制御"</string>
-    <string name="app_not_supported_in_limited" msgid="913035259626149121">"このアプリは制限付きプロフィールではサポートされていません"</string>
-    <string name="app_sees_restricted_accounts" msgid="7503264525057246240">"このアプリはアカウントにアクセスする場合があります"</string>
-    <string name="restriction_wifi_config_title" msgid="8889556384136994814">"Wi-Fiとモバイル"</string>
-    <string name="restriction_wifi_config_summary" msgid="70888791513065244">"Wi-Fiとモバイルの設定の変更を許可する"</string>
-    <string name="restriction_bluetooth_config_title" msgid="8871681580962503671">"Bluetooth"</string>
-    <string name="restriction_bluetooth_config_summary" msgid="8372319681287562506">"Bluetoothのペア設定や設定の変更を許可する"</string>
-    <string name="restriction_nfc_enable_title" msgid="5888100955212267941">"NFC"</string>
-    <string name="restriction_nfc_enable_summary" product="tablet" msgid="3891097373396149915">"タブレットが他のデバイスと接触したときのデータ交換を許可する"</string>
-    <string name="restriction_nfc_enable_summary" product="default" msgid="825331120501418592">"携帯電話が他のデバイスと接触したときのデータ交換を許可する"</string>
-    <string name="restriction_location_enable_title" msgid="8134436816263688497">"位置情報アクセス"</string>
-    <string name="restriction_location_enable_summary" msgid="3489765572281788755">"アプリに位置情報の使用を許可する"</string>
-    <string name="wizard_back" msgid="5567007959434765743">"戻る"</string>
-    <string name="wizard_next" msgid="3606212602795100640">"次へ"</string>
-    <string name="wizard_finish" msgid="3286109692700083252">"終了"</string>
-    <string name="user_image_take_photo" msgid="1280274310152803669">"写真を撮影"</string>
-    <string name="user_image_choose_photo" msgid="7940990613897477057">"ギャラリーから画像を選ぶ"</string>
-    <string name="regulatory_info_text" msgid="5623087902354026557"></string>
 </resources>

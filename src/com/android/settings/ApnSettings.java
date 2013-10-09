@@ -163,9 +163,8 @@ public class ApnSettings extends SettingsPreferenceFragment implements
                 "_id", "name", "apn", "type"}, where, null,
                 Telephony.Carriers.DEFAULT_SORT_ORDER);
 
-        if (cursor != null) {
-            PreferenceGroup apnList = (PreferenceGroup) findPreference("apn_list");
-            apnList.removeAll();
+        PreferenceGroup apnList = (PreferenceGroup) findPreference("apn_list");
+        apnList.removeAll();
 
             ArrayList<Preference> mmsApnList = new ArrayList<Preference>();
 
@@ -177,7 +176,7 @@ public class ApnSettings extends SettingsPreferenceFragment implements
                 String key = cursor.getString(ID_INDEX);
                 String type = cursor.getString(TYPES_INDEX);
 
-                ApnPreference pref = new ApnPreference(getActivity());
+            ApnPreference pref = new ApnPreference(this);
 
                 pref.setKey(key);
                 pref.setTitle(name);

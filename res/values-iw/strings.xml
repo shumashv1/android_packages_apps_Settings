@@ -1111,8 +1111,7 @@
     <string name="filter" msgid="2018011724373033887">"סינון"</string>
     <string name="filter_dlg_title" msgid="8693024463731076091">"בחר אפשרויות סינון"</string>
     <string name="filter_apps_all" msgid="5142129378749391876">"הכל"</string>
-    <string name="filter_apps_disabled" msgid="5364447573326472890">"מנוטרל"</string>
-    <string name="filter_apps_third_party" msgid="7786348047690140979">"הורדו"</string>
+    <string name="filter_apps_third_party" msgid="7786348047690140979">"ההורדה בוצעה"</string>
     <string name="filter_apps_running" msgid="7767071454371350486">"פועל"</string>
     <string name="filter_apps_onsdcard" product="nosdcard" msgid="4843063154701023349">"אחסון USB"</string>
     <string name="filter_apps_onsdcard" product="default" msgid="1477351142334784771">"בכרטיס SD"</string>
@@ -1881,25 +1880,4 @@
     <string name="user_picture_title" msgid="7297782792000291692">"זיהוי תמונה"</string>
     <string name="cell_broadcast_settings" msgid="8415582011920085222">"שידורים סלולריים"</string>
     <string name="cell_broadcast_settings_summary" msgid="3301339398950905913">"בחר את סוגי התראות החירום להצגה."</string>
-    <string name="user_restrictions_title" msgid="7745810037152772035">"הגבלות על אפליקציות ותוכן"</string>
-    <string name="user_rename" msgid="8523499513614655279">"שנה שם"</string>
-    <string name="app_restrictions_custom_label" msgid="6160672982086584261">"הגדר הגבלות אפליקציה"</string>
-    <string name="user_restrictions_controlled_by" msgid="3164078767438313899">"בשליטת <xliff:g id="APP">%1$s</xliff:g>"</string>
-    <string name="app_not_supported_in_limited" msgid="913035259626149121">"יישום זה אינו נתמך בפרופילים מוגבלים"</string>
-    <string name="app_sees_restricted_accounts" msgid="7503264525057246240">"היישום הזה יכול לגשת לחשבונות שלך"</string>
-    <string name="restriction_wifi_config_title" msgid="8889556384136994814">"רשת Wi‑Fi ורשת לנייד"</string>
-    <string name="restriction_wifi_config_summary" msgid="70888791513065244">"אפשר שינוי של הגדרות רשת Wi-Fi ורשת לנייד"</string>
-    <string name="restriction_bluetooth_config_title" msgid="8871681580962503671">"Bluetooth"</string>
-    <string name="restriction_bluetooth_config_summary" msgid="8372319681287562506">"אפשר שינויים של התאמות והגדרות Bluetooth"</string>
-    <string name="restriction_nfc_enable_title" msgid="5888100955212267941">"NFC"</string>
-    <string name="restriction_nfc_enable_summary" product="tablet" msgid="3891097373396149915">"אפשר חילופי מידע כאשר הטאבלט נוגע במכשיר אחר"</string>
-    <string name="restriction_nfc_enable_summary" product="default" msgid="825331120501418592">"אפשר חילופי מידע כאשר הטלפון נוגע במכשיר אחר"</string>
-    <string name="restriction_location_enable_title" msgid="8134436816263688497">"גישה למיקום"</string>
-    <string name="restriction_location_enable_summary" msgid="3489765572281788755">"התר ליישום להשתמש במידע המיקום שלך"</string>
-    <string name="wizard_back" msgid="5567007959434765743">"הקודם"</string>
-    <string name="wizard_next" msgid="3606212602795100640">"הבא"</string>
-    <string name="wizard_finish" msgid="3286109692700083252">"סיום"</string>
-    <string name="user_image_take_photo" msgid="1280274310152803669">"צלם תמונה"</string>
-    <string name="user_image_choose_photo" msgid="7940990613897477057">"בחר תמונה מתוך \'גלריה\'"</string>
-    <string name="regulatory_info_text" msgid="5623087902354026557"></string>
 </resources>

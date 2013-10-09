@@ -592,8 +592,7 @@
     <string name="wifi_wps_failed_tkip" msgid="4282401586860713349">"Δεν υποστηρίζεται η ρύθμιση ασφάλειας ασύρματου δρομολογητή (TKIP)"</string>
     <string name="wifi_wps_failed_auth" msgid="1174614355181181958">"Αποτυχία ελέγχου ταυτότητας. Προσπαθήστε ξανά."</string>
     <string name="wifi_wps_failed_overlap" msgid="5159533685596844778">"Έχει εντοπιστεί μια άλλη συνεδρία WPS. Προσπαθήστε ξανά σε λίγα λεπτά."</string>
-    <string name="wifi_ssid" msgid="641393708309146745">"SSID δικτύου"</string>
-    <string name="wifi_ssid_hint" msgid="897593601067321355">"Πληκτρολογήστε το SSID"</string>
+    <string name="wifi_ssid" msgid="641393708309146745">"Δίκτυο SSID"</string>
     <string name="wifi_security" msgid="6603611185592956936">"Ασφάλεια"</string>
     <string name="wifi_signal" msgid="5514120261628065287">"Ισχύς σήματος"</string>
     <string name="wifi_status" msgid="4824568012414605414">"Κατάσταση"</string>

@@ -67,13 +67,20 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment {
     private static final String KEY_UPDATE_SETTING = "additional_system_update_settings";
     private static final String KEY_EQUIPMENT_ID = "fcc_equipment_id";
     private static final String PROPERTY_EQUIPMENT_ID = "ro.ril.fccid";
-    private static final String KEY_MOD_VERSION = "mod_version";
+    private static final String KEY_AOKP_VERSION = "aokp_version";
+    private static final String KEY_CM_VERSION = "cm_version";
+    private static final String KEY_PA_VERSION = "pa_version";
     private static final String KEY_MOD_BUILD_DATE = "build_date";
+    private static final String KEY_DEVICE_CHIPSET = "device_chipset";
     private static final String KEY_DEVICE_CPU = "device_cpu";
+    private static final String KEY_DEVICE_GPU = "device_gpu";
     private static final String KEY_DEVICE_MEMORY = "device_memory";
-    private static final String KEY_CM_UPDATES = "cm_updates";
+    private static final String KEY_DEVICE_REAR_CAMERA = "device_rear_camera";
+    private static final String KEY_DEVICE_FRONT_CAMERA = "device_front_camera";
+    private static final String KEY_DEVICE_SCREEN_RESOLUTION = "device_screen_resolution";
 
     static final int TAPS_TO_BE_A_DEVELOPER = 7;
+
     long[] mHits = new long[3];
     int mDevHitCountdown;
     Toast mDevHitToast;
@@ -93,8 +100,12 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment {
         setStringSummary(KEY_BUILD_NUMBER, Build.DISPLAY);
         findPreference(KEY_BUILD_NUMBER).setEnabled(true);
         findPreference(KEY_KERNEL_VERSION).setSummary(getFormattedKernelVersion());
-        setValueSummary(KEY_MOD_VERSION, "ro.cm.version");
-        findPreference(KEY_MOD_VERSION).setEnabled(true);
+        setValueSummary(KEY_AOKP_VERSION, "ro.aokp.version");
+        findPreference(KEY_AOKP_VERSION).setEnabled(true);
+        setValueSummary(KEY_CM_VERSION, "ro.cm.version");
+        findPreference(KEY_CM_VERSION).setEnabled(true);
+        setValueSummary(KEY_PA_VERSION, "ro.pa.version");
+        findPreference(KEY_PA_VERSION).setEnabled(true);
         setValueSummary(KEY_MOD_BUILD_DATE, "ro.build.date");
 
         if (!SELinux.isSELinuxEnabled()) {
@@ -104,7 +115,6 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment {
             String status = getResources().getString(R.string.selinux_status_permissive);
             setStringSummary(KEY_SELINUX_STATUS, status);
         }
-        findPreference(KEY_SELINUX_STATUS).setEnabled(true);
 
         // Remove selinux information if property is not present
         removePreferenceIfPropertyMissing(getPreferenceScreen(), KEY_SELINUX_STATUS,
@@ -233,15 +243,21 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment {
                             Toast.LENGTH_SHORT);
                     mDevHitToast.show();
                 }
-            } else if (mDevHitCountdown < 0) {
-                if (mDevHitToast != null) {
-                    mDevHitToast.cancel();
-                }
-                mDevHitToast = Toast.makeText(getActivity(), R.string.show_dev_already,
-                        Toast.LENGTH_LONG);
-                mDevHitToast.show();
             }
-        } else if (preference.getKey().equals(KEY_MOD_VERSION)) {
+        } else if (preference.getKey().equals(KEY_AOKP_VERSION)) {
+            System.arraycopy(mHits, 1, mHits, 0, mHits.length-1);
+            mHits[mHits.length-1] = SystemClock.uptimeMillis();
+            if (mHits[0] >= (SystemClock.uptimeMillis()-500)) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.setClassName("android",
+                        com.android.internal.app.AOKPLogoActivity.class.getName());
+                try {
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Unable to start activity " + intent.toString());
+                }
+            }
+        } else if (preference.getKey().equals(KEY_CM_VERSION)) {
             System.arraycopy(mHits, 1, mHits, 0, mHits.length-1);
             mHits[mHits.length-1] = SystemClock.uptimeMillis();
             if (mHits[0] >= (SystemClock.uptimeMillis()-500)) {
@@ -255,53 +271,30 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment {
                     Log.e(LOG_TAG, "Unable to start activity " + intent.toString());
                 }
             }
-        } else if (preference.getKey().equals(KEY_SELINUX_STATUS)) {
+        } else if (preference.getKey().equals(KEY_PA_VERSION)) {
             System.arraycopy(mHits, 1, mHits, 0, mHits.length-1);
             mHits[mHits.length-1] = SystemClock.uptimeMillis();
             if (mHits[0] >= (SystemClock.uptimeMillis()-500)) {
-                if (SELinux.isSELinuxEnabled()) {
-                    if (!SELinux.isSELinuxEnforced()) {
-                        /* Display the warning dialog */
-                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-                        alertDialog.setTitle(R.string.selinux_enable_title);
-                        alertDialog.setMessage(getResources()
-                            .getString(R.string.selinux_enable_warning));
-                        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                            getResources().getString(com.android.internal.R.string.ok),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    SELinux.setSELinuxEnforce(true);
-                                    String status = getResources()
-                                        .getString(R.string.selinux_status_enforcing);
-                                    setStringSummary(KEY_SELINUX_STATUS, status);
-                                }
-                            });
-                        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                            getResources().getString(com.android.internal.R.string.cancel),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            });
-                        alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                            public void onCancel(DialogInterface dialog) {
-                            }
-                        });
-                        alertDialog.show();
-
-                    } else {
-                        SELinux.setSELinuxEnforce(false);
-                    }
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.setClassName("com.android.settings",
+                        com.android.settings.paranoid.PlatLogoActivity.class.getName());
+                try {
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Unable to start activity " + intent.toString());
                 }
-
-                if (!SELinux.isSELinuxEnabled()) {
-                    String status = getResources().getString(R.string.selinux_status_disabled);
-                    setStringSummary(KEY_SELINUX_STATUS, status);
-                } else if (!SELinux.isSELinuxEnforced()) {
-                    String status = getResources().getString(R.string.selinux_status_permissive);
-                    setStringSummary(KEY_SELINUX_STATUS, status);
-                } else if (SELinux.isSELinuxEnforced()) {
-                    String status = getResources().getString(R.string.selinux_status_enforcing);
-                    setStringSummary(KEY_SELINUX_STATUS, status);
+            }
+        } else if (preference.getKey().equals(KEY_PAC_VERSION)) {
+            System.arraycopy(mHits, 1, mHits, 0, mHits.length-1);
+            mHits[mHits.length-1] = SystemClock.uptimeMillis();
+            if (mHits[0] >= (SystemClock.uptimeMillis()-500)) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.setClassName("com.android.settings",
+                        com.android.settings.pac.PACLogoActivity.class.getName());
+                try {
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Unable to start activity " + intent.toString());
                 }
             }
         }

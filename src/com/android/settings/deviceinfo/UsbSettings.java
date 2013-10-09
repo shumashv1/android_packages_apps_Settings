@@ -22,9 +22,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
-import android.os.storage.StorageManager;
-import android.os.storage.StorageVolume;
-import android.os.UserManager;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
@@ -74,16 +71,6 @@ public class UsbSettings extends SettingsPreferenceFragment {
 
         mMtp = (CheckBoxPreference)root.findPreference(KEY_MTP);
         mPtp = (CheckBoxPreference)root.findPreference(KEY_PTP);
-        mUms = (CheckBoxPreference)root.findPreference(KEY_MASS_STORAGE);
-        if (!storageVolumes[0].allowMassStorage()) {
-            root.removePreference(mUms);
-        }
-
-        UserManager um = (UserManager) getActivity().getSystemService(Context.USER_SERVICE);
-        if (um.hasUserRestriction(UserManager.DISALLOW_USB_FILE_TRANSFER)) {
-            mMtp.setEnabled(false);
-            mPtp.setEnabled(false);
-        }
 
         return root;
     }
@@ -164,14 +151,12 @@ public class UsbSettings extends SettingsPreferenceFragment {
         if (um.hasUserRestriction(UserManager.DISALLOW_USB_FILE_TRANSFER)) {
             return true;
         }
-
-        String function = "none";
-        if (preference == mMtp && mMtp.isChecked()) {
-            function = UsbManager.USB_FUNCTION_MTP;
-        } else if (preference == mPtp && mPtp.isChecked()) {
-            function = UsbManager.USB_FUNCTION_PTP;
-        } else if (preference == mUms && mUms.isChecked()) {
-            function = UsbManager.USB_FUNCTION_MASS_STORAGE;
+        if (preference == mMtp) {
+            mUsbManager.setCurrentFunction(UsbManager.USB_FUNCTION_MTP, true);
+            updateToggles(UsbManager.USB_FUNCTION_MTP);
+        } else if (preference == mPtp) {
+            mUsbManager.setCurrentFunction(UsbManager.USB_FUNCTION_PTP, true);
+            updateToggles(UsbManager.USB_FUNCTION_PTP);
         }
 
         mUsbManager.setCurrentFunction(function, true);

@@ -543,8 +543,8 @@
     <string name="wifi_settings_title" msgid="3103415012485692233">"WLAN"</string>
     <string name="wifi_settings_summary" msgid="668767638556052820">"WLAN-Zugangspunkte festlegen und verwalten"</string>
     <string name="wifi_setup_wizard_title" msgid="70277346338812325">"WLAN auswählen"</string>
-    <string name="wifi_starting" msgid="6732377932749942954">"WLAN wird aktiviert…"</string>
-    <string name="wifi_stopping" msgid="8952524572499500804">"WLAN wird deaktiviert…"</string>
+    <string name="wifi_starting" msgid="6716593470710880000">"WLAN wird aktiviert..."</string>
+    <string name="wifi_stopping" msgid="244864762599017659">"WLAN wird deaktiviert..."</string>
     <string name="wifi_error" msgid="3207971103917128179">"Fehler"</string>
     <string name="wifi_in_airplane_mode" msgid="8652520421778203796">"Im Flugmodus"</string>
     <string name="wifi_fail_to_scan" msgid="1265540342578081461">"Netzwerkscan nicht möglich"</string>
@@ -1299,9 +1299,8 @@
     <string name="development_settings_not_available" msgid="4308569041701535607">"Entwickleroptionen sind für diesen Nutzer nicht verfügbar."</string>
     <string name="enable_adb" msgid="7982306934419797485">"USB-Debugging"</string>
     <string name="enable_adb_summary" msgid="4881186971746056635">"Debugmodus bei Anschluss über USB"</string>
-    <string name="clear_adb_keys" msgid="4038889221503122743">"Autorisierungen für USB-Debugging aufheben"</string>
-    <string name="bugreport_in_power" msgid="4548816486587403971">"Fehlerberichte im Ein/Aus-Menü</string>
-    <string name="bugreport_in_power_summary" msgid="5764234382355067053">Option für den Fehlerbericht im Ein/Aus-Tasten-Menü anzeigen</string>
+    <string name="bugreport_in_power" msgid="4548816486587403971">"Fehlerberichte im Menü \"Akku\""</string>
+    <string name="bugreport_in_power_summary" msgid="5764234382355067053">"Fügt die Option für den Fehlerbericht im Menü \"Akku\" hinzu"</string>
     <string name="keep_screen_on" msgid="1146389631208760344">"Aktiv lassen"</string>
     <string name="keep_screen_on_summary" msgid="2173114350754293009">"Display wird beim Laden nie in den Ruhezustand versetzt"</string>
     <string name="allow_mock_location" msgid="2787962564578664888">"Falsche Standorte"</string>
@@ -1345,7 +1344,7 @@
     <string name="accessibility_global_gesture_preference_title" msgid="6752037184140789970">"Bedienungshilfenverknüpfung"</string>
     <string name="accessibility_global_gesture_preference_summary_on" msgid="6180927399052022181">"An"</string>
     <string name="accessibility_global_gesture_preference_summary_off" msgid="8102103337813609849">"Aus"</string>
-    <string name="accessibility_global_gesture_preference_description" msgid="750438015254396963">"Wenn diese Funktion aktiviert ist, können Sie Bedienungshilfen schnell in zwei Schritten aktivieren:\n\nSchritt 1: Drücken und halten Sie die Ein-/Austaste, bis Sie einen Ton hören oder eine Vibration spüren.\n\nSchritt 2: Berühren und halten Sie mit zwei Fingern, bis Sie eine Audiobestätigung hören.\n\nFalls das Gerät mehrere Nutzer hat, werden die Bedienungshilfen durch Verwendung dieser Verknüpfung in der Bildschirmsperre solange aktiviert, bis das Gerät entsperrt ist."</string>
+    <string name="accessibility_global_gesture_preference_description" msgid="750438015254396963">"Wenn diese Funktion aktiviert ist, können Sie Bedienungshilfen schnell in zwei Schritten aktivieren:"\n\n"1. Schritt: Drücken und halten Sie die Ein-/Austaste, bis Sie einen Ton hören oder eine Vibration spüren."\n\n"2. Schritt: Berühren und halten Sie mit zwei Fingern, bis Sie eine Audiobestätigung hören."\n\n"Falls das Gerät mehrere Nutzer hat, werden die Bedienungshilfen durch Verwendung dieser Verknüpfung in der Bildschirmsperre solange aktiviert, bis das Gerät entsperrt ist."</string>
     <string name="accessibility_toggle_large_text_preference_title" msgid="6307247527580207161">"Großer Text"</string>
     <string name="accessibility_toggle_screen_magnification_preference_title" msgid="2472285215737820469">"Bildschirmvergrößerung"</string>
     <string name="accessibility_toggle_screen_magnification_auto_update_preference_title" msgid="7218498768415430963">"Vergrößerung autom. aktualisieren"</string>
@@ -1568,10 +1567,10 @@
     <string name="sound_category_notification_title" msgid="3502115998790286943">"Benachrichtigungen"</string>
     <string name="sound_category_call_ringtone_vibrate_title" msgid="1543777228646645163">"Klingelton &amp; Vibration für Anrufe"</string>
     <string name="sound_category_system_title" msgid="1480844520622721141">"System"</string>
-    <string name="wifi_setup_title" msgid="2970260757780025029">"WLAN-Einrichtung"</string>
-    <string name="wifi_setup_title_editing_network" msgid="6020614644556717979">"Mit WLAN-Netzwerk verbinden: <xliff:g id="NETWORK_NAME">%s</xliff:g>"</string>
-    <string name="wifi_setup_title_connecting_network" msgid="5572226790101017822">"Verbindung mit WLAN-Netzwerk <xliff:g id="NETWORK_NAME">%s</xliff:g> wird hergestellt…"</string>
-    <string name="wifi_setup_title_connected_network" msgid="1608788657122010919">"Mit WLAN-Netzwerk <xliff:g id="NETWORK_NAME">%s</xliff:g> verbunden"</string>
+    <string name="wifi_setup_title" msgid="661074868726906436">"WLAN-Einrichtung"</string>
+    <string name="wifi_setup_title_editing_network" msgid="7304321031985059969">"Mit WLAN-Netzwerk verbinden: <xliff:g id="NETWORK_NAME">%s</xliff:g>"</string>
+    <string name="wifi_setup_title_connecting_network" msgid="3747859666621319757">"Verbinden mit WLAN <xliff:g id="NETWORK_NAME">%s</xliff:g>..."</string>
+    <string name="wifi_setup_title_connected_network" msgid="209755856836003839">"Mit WLAN-Netzwerk <xliff:g id="NETWORK_NAME">%s</xliff:g> verbunden"</string>
     <string name="wifi_setup_title_add_network" msgid="6932651000151032301">"Netzwerk hinzufügen"</string>
     <string name="wifi_setup_not_connected" msgid="6997432604664057052">"Nicht verbunden"</string>
     <string name="wifi_setup_add_network" msgid="5939624680150051807">"Netzwerk hinzufügen"</string>
@@ -1881,25 +1880,4 @@
     <string name="user_picture_title" msgid="7297782792000291692">"Foto-ID"</string>
     <string name="cell_broadcast_settings" msgid="8415582011920085222">"Cell Broadcasts"</string>
     <string name="cell_broadcast_settings_summary" msgid="3301339398950905913">"Wählen Sie aus, welche Notfallbenachrichtigungen angezeigt werden sollen."</string>
-    <string name="user_restrictions_title" msgid="7745810037152772035">"Beschränkungen für Apps und Inhalte"</string>
-    <string name="user_rename" msgid="8523499513614655279">"Umbenennen"</string>
-    <string name="app_restrictions_custom_label" msgid="6160672982086584261">"App-Beschränkungen festlegen"</string>
-    <string name="user_restrictions_controlled_by" msgid="3164078767438313899">"Von <xliff:g id="APP">%1$s</xliff:g> festgelegt"</string>
-    <string name="app_not_supported_in_limited" msgid="913035259626149121">"Diese App wird in eingeschränkten Profilen nicht unterstützt."</string>
-    <string name="app_sees_restricted_accounts" msgid="7503264525057246240">"Diese App darf auf Ihre Konten zugreifen."</string>
-    <string name="restriction_wifi_config_title" msgid="8889556384136994814">"WLAN und mobile Nutzung"</string>
-    <string name="restriction_wifi_config_summary" msgid="70888791513065244">"Änderungen an Einstellungen für WLAN und mobile Nutzung zulassen"</string>
-    <string name="restriction_bluetooth_config_title" msgid="8871681580962503671">"Bluetooth"</string>
-    <string name="restriction_bluetooth_config_summary" msgid="8372319681287562506">"Änderungen an Bluetooth-Pairings und -Einstellungen zulassen"</string>
-    <string name="restriction_nfc_enable_title" msgid="5888100955212267941">"NFC"</string>
-    <string name="restriction_nfc_enable_summary" product="tablet" msgid="3891097373396149915">"Datenaustausch bei Kontakt mit anderen Geräten zulassen"</string>
-    <string name="restriction_nfc_enable_summary" product="default" msgid="825331120501418592">"Datenaustausch bei Kontakt mit anderen Geräten zulassen"</string>
-    <string name="restriction_location_enable_title" msgid="8134436816263688497">"Standortzugriff"</string>
-    <string name="restriction_location_enable_summary" msgid="3489765572281788755">"Apps die Verwendung Ihrer Standortinformationen gestatten"</string>
-    <string name="wizard_back" msgid="5567007959434765743">"Zurück"</string>
-    <string name="wizard_next" msgid="3606212602795100640">"Weiter"</string>
-    <string name="wizard_finish" msgid="3286109692700083252">"Fertig"</string>
-    <string name="user_image_take_photo" msgid="1280274310152803669">"Foto aufnehmen"</string>
-    <string name="user_image_choose_photo" msgid="7940990613897477057">"Foto aus Galerie auswählen"</string>
-    <string name="regulatory_info_text" msgid="5623087902354026557"></string>
 </resources>

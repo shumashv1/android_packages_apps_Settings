@@ -390,8 +390,7 @@ public class InstalledAppDetails extends Fragment
                 ServiceManager.getService(Context.NOTIFICATION_SERVICE));
         boolean enabled = true; // default on
         try {
-            enabled = nm.areNotificationsEnabledForPackage(mAppEntry.info.packageName,
-                    mAppEntry.info.uid);
+            enabled = nm.areNotificationsEnabledForPackage(mAppEntry.info.packageName);
         } catch (android.os.RemoteException ex) {
             // this does not bode well
         }
@@ -402,17 +401,6 @@ public class InstalledAppDetails extends Fragment
             mNotificationSwitch.setEnabled(true);
             mNotificationSwitch.setOnCheckedChangeListener(this);
         }
-    }
-
-    private void initPrivacyGuardButton() {
-        if (mPrivacyGuardSwitch == null) {
-            return;
-        }
-        mAppOps = (AppOpsManager)getActivity().getSystemService(Context.APP_OPS_SERVICE);
-        boolean isEnabled = mAppOps.getPrivacyGuardSettingForPackage(
-            mAppEntry.info.uid, mAppEntry.info.packageName);
-        mPrivacyGuardSwitch.setChecked(isEnabled);
-        mPrivacyGuardSwitch.setOnCheckedChangeListener(this);
     }
 
     /** Called when the activity is first created. */
@@ -1331,15 +1319,10 @@ public class InstalledAppDetails extends Fragment
                 ServiceManager.getService(Context.NOTIFICATION_SERVICE));
         try {
             final boolean enable = mNotificationSwitch.isChecked();
-            nm.setNotificationsEnabledForPackage(packageName, mAppEntry.info.uid, enabled);
+            nm.setNotificationsEnabledForPackage(packageName, enabled);
         } catch (android.os.RemoteException ex) {
             mNotificationSwitch.setChecked(!enabled); // revert
         }
-    }
-
-    private void setPrivacyGuard(boolean enabled) {
-        mAppOps.setPrivacyGuardSettingForPackage(
-            mAppEntry.info.uid, mAppEntry.info.packageName, enabled);
     }
 
     private int getPremiumSmsPermission(String packageName) {
@@ -1438,12 +1421,6 @@ public class InstalledAppDetails extends Fragment
                 showDialogInner(DLG_DISABLE_NOTIFICATIONS, 0);
             } else {
                 setNotificationsEnabled(true);
-            }
-        } else if (buttonView == mPrivacyGuardSwitch) {
-            if (isChecked) {
-                showDialogInner(DLG_PRIVACY_GUARD, 0);
-            } else {
-                setPrivacyGuard(false);
             }
         }
     }

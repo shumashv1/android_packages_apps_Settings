@@ -131,9 +131,6 @@ public class WifiSettings extends SettingsPreferenceFragment
     private boolean mP2pSupported;
     private boolean mIbssSupported;
 
-    List<WifiChannel> mSupportedChannels;
-
-    private UserManager mUserManager;
 
     private WifiEnabler mWifiEnabler;
     // An access point being editted is stored here.

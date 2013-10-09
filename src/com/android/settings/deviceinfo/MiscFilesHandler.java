@@ -154,20 +154,6 @@ public class MiscFilesHandler extends ListActivity {
                     }
                     unbindService(mDefContainerConn);
                 }
-
-                @Override
-                public void onServiceDisconnected(ComponentName name) {
-                }
-            };
-
-            private String mPath;
-
-            public DeleteHandler(String path) {
-                mPath = path;
-                Intent service = new Intent().setComponent(
-                        StorageMeasurement.DEFAULT_CONTAINER_COMPONENT);
-                bindServiceAsUser(service, mDefContainerConn, Context.BIND_AUTO_CREATE,
-                        new UserHandle(UserHandle.USER_OWNER));
             }
         }
 

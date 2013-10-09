@@ -1069,6 +1069,7 @@ public class AccessibilitySettings extends SettingsPreferenceFragment implements
             getListView().setCacheColorHint(0);
             getListView().setSelector(new ColorDrawable(Color.TRANSPARENT));
             getListView().setDivider(null);
+            getListView().setEnabled(false);
         }
 
         @Override

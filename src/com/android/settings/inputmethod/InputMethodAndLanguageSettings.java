@@ -98,7 +98,6 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
     @SuppressWarnings("unused")
     private SettingsObserver mSettingsObserver;
     private Intent mIntentWaitingForResult;
-    private ListPreference mVolumeKeyCursorControl;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -208,18 +207,6 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
                 "spellcheckers_settings"));
         if (scp != null) {
             scp.setFragmentIntent(this, intent);
-        }
-
-        mVolumeKeyCursorControl = (ListPreference) findPreference(KEY_VOLUME_KEY_CURSOR_CONTROL);
-        if(mVolumeKeyCursorControl != null) {
-            if (Utils.hasVolumeRocker(getActivity())) {
-                mVolumeKeyCursorControl.setOnPreferenceChangeListener(this);
-                mVolumeKeyCursorControl.setValue(Integer.toString(Settings.System.getInt(getActivity()
-                        .getContentResolver(), Settings.System.VOLUME_KEY_CURSOR_CONTROL, 0)));
-                mVolumeKeyCursorControl.setSummary(mVolumeKeyCursorControl.getEntry());
-            } else {
-                getPreferenceScreen().removePreference(mVolumeKeyCursorControl);
-            }
         }
 
         mHandler = new Handler();

@@ -96,9 +96,6 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
     public static final String PREF_SHOW = "show";
 
     private static final String ENABLE_ADB = "enable_adb";
-    private static final String ADB_NOTIFY = "adb_notify";
-    private static final String ADB_TCPIP  = "adb_over_network";
-    private static final String CLEAR_ADB_KEYS = "clear_adb_keys";
     private static final String KEEP_SCREEN_ON = "keep_screen_on";
     private static final String ALLOW_MOCK_LOCATION = "allow_mock_location";
     private static final String ALLOW_MOCK_SMS = "allow_mock_sms";
@@ -155,10 +152,6 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
 
     private static final String PACKAGE_MIME_TYPE = "application/vnd.android.package-archive";
 
-    private static final String DEVELOPMENT_TOOLS = "development_tools";
-
-    private static final String ADVANCED_REBOOT_KEY = "advanced_reboot";
-
     private static final int RESULT_DEBUG_APP = 1000;
 
     private IWindowManager mWindowManager;
@@ -171,8 +164,6 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
     private boolean mDontPokeProperties;
 
     private CheckBoxPreference mEnableAdb;
-    private CheckBoxPreference mAdbNotify;
-    private Preference mClearAdbKeys;
     private Preference mBugreport;
     private CheckBoxPreference mBugreportInPower;
     private CheckBoxPreference mAdbOverNetwork;
@@ -230,11 +221,6 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
     private boolean mDialogClicked;
     private Dialog mEnableDialog;
     private Dialog mAdbDialog;
-    private Dialog mAdbTcpDialog;
-    private Dialog mRootDialog;
-    private Dialog mAdbKeysDialog;
-
-    private boolean mUnavailable;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -254,18 +240,6 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
         addPreferencesFromResource(R.xml.development_prefs);
 
         mEnableAdb = findAndInitCheckboxPref(ENABLE_ADB);
-        mAdbNotify = (CheckBoxPreference) findPreference(ADB_NOTIFY);
-        mAllPrefs.add(mAdbNotify);
-
-        mClearAdbKeys = findPreference(CLEAR_ADB_KEYS);
-        if (!SystemProperties.getBoolean("ro.adb.secure", false)) {
-            PreferenceGroup debugDebuggingCategory = (PreferenceGroup)
-                    findPreference(DEBUG_DEBUGGING_CATEGORY_KEY);
-            if (debugDebuggingCategory != null) {
-                debugDebuggingCategory.removePreference(mClearAdbKeys);
-            }
-        }
-
         mBugreport = findPreference(BUGREPORT);
         mBugreportInPower = findAndInitCheckboxPref(BUGREPORT_IN_POWER_KEY);
         mAdbOverNetwork = findAndInitCheckboxPref(ADB_TCPIP);
@@ -347,24 +321,6 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
             mAllPrefs.add(hdcpChecking);
         }
         removeHdcpOptionsForProduction();
-
-        mRootAccess = (ListPreference) findPreference(ROOT_ACCESS_KEY);
-        mRootAccess.setOnPreferenceChangeListener(this);
-        if (!removeRootOptionsIfRequired()) {
-            mAllPrefs.add(mRootAccess);
-        }
-
-        mDevelopmentTools = (PreferenceScreen) findPreference(DEVELOPMENT_TOOLS);
-        if (!removePreferenceIfPackageNotInstalled(mDevelopmentTools)) {
-            mAllPrefs.add(mDevelopmentTools);
-        }
-    }
-
-    private ListPreference addListPreference(String prefKey) {
-        ListPreference pref = (ListPreference) findPreference(prefKey);
-        mAllPrefs.add(pref);
-        pref.setOnPreferenceChangeListener(this);
-        return pref;
     }
 
     private void disableForUser(Preference pref) {
@@ -384,18 +340,6 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
         return pref;
     }
 
-    private boolean removeRootOptionsIfRequired() {
-        // user builds don't get root, and eng always gets root
-        if (!(Build.IS_DEBUGGABLE || "eng".equals(Build.TYPE))) {
-            if (mRootAccess != null) {
-                getPreferenceScreen().removePreference(mRootAccess);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -405,11 +349,7 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
 
         final int padding = activity.getResources().getDimensionPixelSize(
                 R.dimen.action_bar_switch_padding);
-        mEnabledSwitch.setPaddingRelative(0, 0, padding, 0);
-        if (mUnavailable) {
-            mEnabledSwitch.setEnabled(false);
-            return;
-        }
+        mEnabledSwitch.setPadding(0, 0, padding, 0);
         mEnabledSwitch.setOnCheckedChangeListener(this);
     }
 
@@ -545,47 +485,6 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
         updateExperimentalWebViewOptions();
         updateVerifyAppsOverUsbOptions();
         updateBugreportOptions();
-        updateRootAccessOptions();
-        updateAdvancedRebootOptions();
-    }
-
-    private void writeAdvancedRebootOptions() {
-        Settings.Secure.putInt(getActivity().getContentResolver(),
-                Settings.Secure.ADVANCED_REBOOT,
-                mAdvancedReboot.isChecked() ? 1 : 0);
-    }
-
-    private void updateAdvancedRebootOptions() {
-        mAdvancedReboot.setChecked(Settings.Secure.getInt(getActivity().getContentResolver(),
-                Settings.Secure.ADVANCED_REBOOT, 0) != 0);
-    }
-
-    private void updateAdbOverNetwork() {
-        int port = Settings.Secure.getInt(getActivity().getContentResolver(),
-                Settings.Secure.ADB_PORT, 0);
-        boolean enabled = port > 0;
-
-        updateCheckBox(mAdbOverNetwork, enabled);
-
-        WifiInfo wifiInfo = null;
-
-        if (enabled) {
-            IWifiManager wifiManager = IWifiManager.Stub.asInterface(
-                    ServiceManager.getService(Context.WIFI_SERVICE));
-            try {
-                wifiInfo = wifiManager.getConnectionInfo();
-            } catch (RemoteException e) {
-                Log.e(TAG, "wifiManager, getConnectionInfo()", e);
-            }
-        }
-
-        if (wifiInfo != null) {
-            String hostAddress = NetworkUtils.intToInetAddress(
-                    wifiInfo.getIpAddress()).getHostAddress();
-            mAdbOverNetwork.setSummary(hostAddress + ":" + String.valueOf(port));
-        } else {
-            mAdbOverNetwork.setSummary(R.string.adb_over_network_summary);
-        }
     }
 
     private void resetDangerousOptions() {
@@ -598,9 +497,6 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
             }
         }
         resetDebuggerOptions();
-        resetRootAccessOptions();
-        resetAdbNotifyOptions();
-        resetVerifyAppsOverUsbOptions();
         writeAnimationScaleOption(0, mWindowAnimationScale, null);
         writeAnimationScaleOption(1, mTransitionAnimationScale, null);
         writeAnimationScaleOption(2, mAnimatorDurationScale, null);
@@ -610,50 +506,6 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
         updateAllOptions();
         mDontPokeProperties = false;
         pokeSystemProperties();
-    }
-
-    private void updateRootAccessOptions() {
-        String value = SystemProperties.get(ROOT_ACCESS_PROPERTY, "1");
-        mRootAccess.setValue(value);
-        mRootAccess.setSummary(getResources()
-                .getStringArray(R.array.root_access_entries)[Integer.valueOf(value)]);
-    }
-
-    /* package */ static boolean isRootForAppsEnabled() {
-        int value = SystemProperties.getInt(ROOT_ACCESS_PROPERTY, 1);
-        return value == 1 || value == 3;
-    }
-
-    private void writeRootAccessOptions(Object newValue) {
-        String oldValue = SystemProperties.get(ROOT_ACCESS_PROPERTY, "1");
-        SystemProperties.set(ROOT_ACCESS_PROPERTY, newValue.toString());
-        if (Integer.valueOf(newValue.toString()) < 2 && !oldValue.equals(newValue)
-                && "1".equals(SystemProperties.get("service.adb.root", "0"))) {
-            SystemProperties.set("service.adb.root", "0");
-            Settings.Secure.putInt(getActivity().getContentResolver(),
-                    Settings.Secure.ADB_ENABLED, 0);
-            Settings.Secure.putInt(getActivity().getContentResolver(),
-                    Settings.Secure.ADB_ENABLED, 1);
-        }
-        updateRootAccessOptions();
-    }
-
-    private void resetRootAccessOptions() {
-        String oldValue = SystemProperties.get(ROOT_ACCESS_PROPERTY, "1");
-        SystemProperties.set(ROOT_ACCESS_PROPERTY, "1");
-        if (!oldValue.equals("1") && "1".equals(SystemProperties.get("service.adb.root", "0"))) {
-            SystemProperties.set("service.adb.root", "0");
-            Settings.Secure.putInt(getActivity().getContentResolver(),
-                    Settings.Secure.ADB_ENABLED, 0);
-            Settings.Secure.putInt(getActivity().getContentResolver(),
-                    Settings.Secure.ADB_ENABLED, 1);
-        }
-        updateRootAccessOptions();
-    }
-
-    private void resetAdbNotifyOptions() {
-        Settings.Secure.putInt(getActivity().getContentResolver(),
-                Settings.Secure.ADB_NOTIFY, 1);
     }
 
     private void updateHdcpValues() {
@@ -1419,14 +1271,6 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
             mAdbDialog.dismiss();
             mAdbDialog = null;
         }
-        if (mAdbTcpDialog != null) {
-            mAdbTcpDialog.dismiss();
-            mAdbTcpDialog = null;
-        }
-        if (mAdbKeysDialog != null) {
-            mAdbKeysDialog.dismiss();
-            mAdbKeysDialog = null;
-        }
         if (mEnableDialog != null) {
             mEnableDialog.dismiss();
             mEnableDialog = null;
@@ -1446,21 +1290,9 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
                 mVerifyAppsOverUsb.setEnabled(true);
                 updateVerifyAppsOverUsbOptions();
                 updateBugreportOptions();
-            }
-        } else if (dialog == mAdbTcpDialog) {
-            if (which == DialogInterface.BUTTON_POSITIVE) {
-                Settings.Secure.putInt(getActivity().getContentResolver(),
-                        Settings.Secure.ADB_PORT, 5555);
-            }
-        } else if (dialog == mAdbKeysDialog) {
-            if (which == DialogInterface.BUTTON_POSITIVE) {
-                try {
-                    IBinder b = ServiceManager.getService(Context.USB_SERVICE);
-                    IUsbManager service = IUsbManager.Stub.asInterface(b);
-                    service.clearUsbDebuggingKeys();
-                } catch (RemoteException e) {
-                    Log.e(TAG, "Unable to clear adb keys", e);
-                }
+            } else {
+                // Reset the toggle
+                mEnableAdb.setChecked(false);
             }
         } else if (dialog == mEnableDialog) {
             if (which == DialogInterface.BUTTON_POSITIVE) {

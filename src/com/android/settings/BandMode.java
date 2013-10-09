@@ -32,11 +32,7 @@ public class BandMode extends Activity {
 
     private static final int EVENT_BAND_SCAN_COMPLETED = 100;
     private static final int EVENT_BAND_SELECTION_DONE = 200;
-/*
-* pulled from hardware/ril/include/telephony/ril.h and cleaned up a little
-* there ought to be a better way to do this...
-* make queryAvailableBandMode return something other than just an int array?
-*/
+
     private static final String[] BAND_NAMES = new String[] {
             "Automatic",
             "EURO Band     (GSM-900/DCS-1800/WCDMA-IMT-2000)",
